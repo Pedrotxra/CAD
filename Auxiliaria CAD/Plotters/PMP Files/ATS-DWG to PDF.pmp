@@ -1,0 +1,1062 @@
+PIAFILEVERSION_3.0,json
+{
+ "data" : 
+ {
+  "hidden" : 
+  {
+   "media" : 
+   {
+    "default_size" : "ANSI_A_(11.00_x_8.50_Inches)",
+    "size" : 
+    {
+     "0" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ANSI A (11,00 x 8,50 polegadas)",
+      "media_description_name" : "ANSI_A_Landscape_11.00W_x_8.50H_-_(5,_17)_x_(274,_199)_=49004_MM",
+      "media_group" : 0,
+      "name" : "ANSI_A_(11.00_x_8.50_Inches)"
+     },
+     "1" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ANSI A (8,50 x 11,00 polegadas)",
+      "media_description_name" : "ANSI_A_Portrait_8.50W_x_11.00H_-_(5,_17)_x_(211,_262)_=50528_MM",
+      "media_group" : 0,
+      "name" : "ANSI_A_(8.50_x_11.00_Inches)"
+     },
+     "10" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ANSI expand A (8,50 x 11,00 polegadas)",
+      "media_description_name" : "ANSI_expand_A_Portrait_8.50W_x_11.00H_-_(5,_10)_x_(211,_269)_=53410_MM",
+      "media_group" : 0,
+      "name" : "ANSI_expand_A_(8.50_x_11.00_Inches)"
+     },
+     "11" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ANSI expand B (11,00 x 17,00 polegadas)",
+      "media_description_name" : "ANSI_expand_B_Portrait_11.00W_x_17.00H_-_(5,_10)_x_(274,_422)_=110939_MM",
+      "media_group" : 0,
+      "name" : "ANSI_expand_B_(11.00_x_17.00_Inches)"
+     },
+     "12" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ANSI expand B (17,00 x 11,00 polegadas)",
+      "media_description_name" : "ANSI_expand_B_Landscape_17.00W_x_11.00H_-_(5,_10)_x_(427,_269)_=109415_MM",
+      "media_group" : 0,
+      "name" : "ANSI_expand_B_(17.00_x_11.00_Inches)"
+     },
+     "13" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ANSI expand C (17,00 x 22,00 polegadas)",
+      "media_description_name" : "ANSI_expand_C_Portrait_17.00W_x_22.00H_-_(10,_427)_x_(549,_432)_=227266_MM",
+      "media_group" : 0,
+      "name" : "ANSI_expand_C_(17.00_x_22.00_Inches)"
+     },
+     "14" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ANSI expand C (22,00 x 17,00 polegadas)",
+      "media_description_name" : "ANSI_expand_C_Landscape_22.00W_x_17.00H_-_(10,_554)_x_(422,_559)_=225996_MM",
+      "media_group" : 0,
+      "name" : "ANSI_expand_C_(22.00_x_17.00_Inches)"
+     },
+     "15" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ANSI expand D (22,00 x 34,00 polegadas)",
+      "media_description_name" : "ANSI_expand_D_Portrait_22.00W_x_34.00H_-_(10,_554)_x_(854,_559)_=462968_MM",
+      "media_group" : 0,
+      "name" : "ANSI_expand_D_(22.00_x_34.00_Inches)"
+     },
+     "16" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ANSI expand D (34,00 x 22,00 polegadas)",
+      "media_description_name" : "ANSI_expand_D_Landscape_34.00W_x_22.00H_-_(10,_859)_x_(549,_864)_=459920_MM",
+      "media_group" : 0,
+      "name" : "ANSI_expand_D_(34.00_x_22.00_Inches)"
+     },
+     "17" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ANSI expand E (34,00 x 44,00 polegadas)",
+      "media_description_name" : "ANSI_expand_E_Portrait_34.00W_x_44.00H_-_(10,_859)_x_(1108,_864)_=936911_MM",
+      "media_group" : 0,
+      "name" : "ANSI_expand_E_(34.00_x_44.00_Inches)"
+     },
+     "18" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ANSI full bleed A (11.00 x 8.50 polegadas)",
+      "media_description_name" : "ANSI_full_bleed_A_Landscape_11.00W_x_8.50H_-_(,_)_x_(279,_216)_=60322_MM",
+      "media_group" : 0,
+      "name" : "ANSI_full_bleed_A_(11.00_x_8.50_Inches)"
+     },
+     "19" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ANSI full bleed A (8.50 x 11.00 polegadas)",
+      "media_description_name" : "ANSI_full_bleed_A_Portrait_8.50W_x_11.00H_-_(,_)_x_(216,_279)_=60322_MM",
+      "media_group" : 0,
+      "name" : "ANSI_full_bleed_A_(8.50_x_11.00_Inches)"
+     },
+     "2" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ANSI B (11,00 x 17,00 polegadas)",
+      "media_description_name" : "ANSI_B_Portrait_11.00W_x_17.00H_-_(5,_17)_x_(274,_415)_=107167_MM",
+      "media_group" : 0,
+      "name" : "ANSI_B_(11.00_x_17.00_Inches)"
+     },
+     "20" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ANSI full bleed B (11.00 x 17.00 polegadas)",
+      "media_description_name" : "ANSI_full_bleed_B_Portrait_11.00W_x_17.00H_-_(,_)_x_(279,_432)_=120645_MM",
+      "media_group" : 0,
+      "name" : "ANSI_full_bleed_B_(11.00_x_17.00_Inches)"
+     },
+     "21" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ANSI full bleed B (17.00 x 11.00 polegadas)",
+      "media_description_name" : "ANSI_full_bleed_B_Landscape_17.00W_x_11.00H_-_(,_)_x_(432,_279)_=120645_MM",
+      "media_group" : 0,
+      "name" : "ANSI_full_bleed_B_(17.00_x_11.00_Inches)"
+     },
+     "22" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ANSI full bleed C (17.00 x 22.00 polegadas)",
+      "media_description_name" : "ANSI_full_bleed_C_Portrait_17.00W_x_22.00H_-_(,_)_x_(432,_559)_=241290_MM",
+      "media_group" : 0,
+      "name" : "ANSI_full_bleed_C_(17.00_x_22.00_Inches)"
+     },
+     "23" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ANSI full bleed C (22.00 x 17.00 polegadas)",
+      "media_description_name" : "ANSI_full_bleed_C_Landscape_22.00W_x_17.00H_-_(,_)_x_(559,_432)_=241290_MM",
+      "media_group" : 0,
+      "name" : "ANSI_full_bleed_C_(22.00_x_17.00_Inches)"
+     },
+     "24" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ANSI full bleed D (22.00 x 34.00 polegadas)",
+      "media_description_name" : "ANSI_full_bleed_D_Portrait_22.00W_x_34.00H_-_(,_)_x_(559,_864)_=482580_MM",
+      "media_group" : 0,
+      "name" : "ANSI_full_bleed_D_(22.00_x_34.00_Inches)"
+     },
+     "25" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ANSI full bleed D (34.00 x 22.00 polegadas)",
+      "media_description_name" : "ANSI_full_bleed_D_Landscape_34.00W_x_22.00H_-_(,_)_x_(864,_559)_=482580_MM",
+      "media_group" : 0,
+      "name" : "ANSI_full_bleed_D_(34.00_x_22.00_Inches)"
+     },
+     "26" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ANSI full bleed E (34.00 x 44.00 polegadas)",
+      "media_description_name" : "ANSI_full_bleed_E_Portrait_34.00W_x_44.00H_-_(,_)_x_(864,_1118)_=965159_MM",
+      "media_group" : 0,
+      "name" : "ANSI_full_bleed_E_(34.00_x_44.00_Inches)"
+     },
+     "27" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ANSI full bleed F (28.00 x 40.00 polegadas)",
+      "media_description_name" : "ANSI_full_bleed_F_Portrait_28.00W_x_40.00H_-_(,_)_x_(711,_1016)_=722579_MM",
+      "media_group" : 0,
+      "name" : "ANSI_full_bleed_F_(28.00_x_40.00_Inches)"
+     },
+     "28" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ARCH C (18,00 x 24,00 polegadas)",
+      "media_description_name" : "ARCH_C_Portrait_18.00W_x_24.00H_-_(5,_17)_x_(452,_593)_=257408_MM",
+      "media_group" : 2,
+      "name" : "ARCH_C_(18.00_x_24.00_Inches)"
+     },
+     "29" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ARCH C (24,00 x 18,00 polegadas)",
+      "media_description_name" : "ARCH_C_Landscape_24.00W_x_18.00H_-_(5,_17)_x_(605,_440)_=253751_MM",
+      "media_group" : 2,
+      "name" : "ARCH_C_(24.00_x_18.00_Inches)"
+     },
+     "3" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ANSI B (17,00 x 11,00 polegadas)",
+      "media_description_name" : "ANSI_B_Landscape_17.00W_x_11.00H_-_(5,_17)_x_(427,_262)_=103510_MM",
+      "media_group" : 0,
+      "name" : "ANSI_B_(17.00_x_11.00_Inches)"
+     },
+     "30" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ARCH D (24,00 x 36,00 polegadas)",
+      "media_description_name" : "ARCH_D_Portrait_24.00W_x_36.00H_-_(5,_17)_x_(605,_897)_=527888_MM",
+      "media_group" : 2,
+      "name" : "ARCH_D_(24.00_x_36.00_Inches)"
+     },
+     "31" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ARCH D (36,00 x 24,00 polegadas)",
+      "media_description_name" : "ARCH_D_Landscape_36.00W_x_24.00H_-_(5,_17)_x_(909,_593)_=520573_MM",
+      "media_group" : 2,
+      "name" : "ARCH_D_(36.00_x_24.00_Inches)"
+     },
+     "32" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ARCH E (36,00 x 48,00 polegadas)",
+      "media_description_name" : "ARCH_E_Portrait_36.00W_x_48.00H_-_(5,_17)_x_(909,_1202)_=1071895_MM",
+      "media_group" : 2,
+      "name" : "ARCH_E_(36.00_x_48.00_Inches)"
+     },
+     "33" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ARCH E1 (30,00 x 42,00 polegadas)",
+      "media_description_name" : "ARCH_E1_Portrait_30.00W_x_42.00H_-_(5,_17)_x_(757,_1050)_=776666_MM",
+      "media_group" : 2,
+      "name" : "ARCH_E1_(30.00_x_42.00_Inches)"
+     },
+     "34" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ARCH expand C (18,00 x 24,00 polegadas)",
+      "media_description_name" : "ARCH_expand_C_Portrait_18.00W_x_24.00H_-_(5,_10)_x_(452,_600)_=263669_MM",
+      "media_group" : 0,
+      "name" : "ARCH_expand_C_(18.00_x_24.00_Inches)"
+     },
+     "35" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ARCH expand C (24,00 x 18,00 polegadas)",
+      "media_description_name" : "ARCH_expand_C_Landscape_24.00W_x_18.00H_-_(5,_10)_x_(605,_447)_=262145_MM",
+      "media_group" : 0,
+      "name" : "ARCH_expand_C_(24.00_x_18.00_Inches)"
+     },
+     "36" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ARCH expand D (24,00 x 36,00 polegadas)",
+      "media_description_name" : "ARCH_expand_D_Portrait_24.00W_x_36.00H_-_(5,_10)_x_(605,_904)_=536282_MM",
+      "media_group" : 0,
+      "name" : "ARCH_expand_D_(24.00_x_36.00_Inches)"
+     },
+     "37" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ARCH expand D (36,00 x 24,00 polegadas)",
+      "media_description_name" : "ARCH_expand_D_Landscape_36.00W_x_24.00H_-_(5,_10)_x_(909,_600)_=533234_MM",
+      "media_group" : 0,
+      "name" : "ARCH_expand_D_(36.00_x_24.00_Inches)"
+     },
+     "38" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ARCH expand E (36,00 x 48,00 polegadas)",
+      "media_description_name" : "ARCH_expand_E_Portrait_36.00W_x_48.00H_-_(5,_10)_x_(909,_1209)_=1084556_MM",
+      "media_group" : 0,
+      "name" : "ARCH_expand_E_(36.00_x_48.00_Inches)"
+     },
+     "39" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ARCH expand E1 (30,00 x 42,00 polegadas)",
+      "media_description_name" : "ARCH_expand_E1_Portrait_30.00W_x_42.00H_-_(5,_10)_x_(757,_1057)_=787194_MM",
+      "media_group" : 0,
+      "name" : "ARCH_expand_E1_(30.00_x_42.00_Inches)"
+     },
+     "4" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ANSI C (17,00 x 22,00 polegadas)",
+      "media_description_name" : "ANSI_C_Portrait_17.00W_x_22.00H_-_(5,_17)_x_(427,_542)_=221361_MM",
+      "media_group" : 0,
+      "name" : "ANSI_C_(17.00_x_22.00_Inches)"
+     },
+     "40" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ARCH full bleed A (12.00 x 9.00 polegadas)",
+      "media_description_name" : "ARCH_full_bleed_A_Landscape_12.00W_x_9.00H_-_(,_)_x_(305,_229)_=69677_MM",
+      "media_group" : 0,
+      "name" : "ARCH_full_bleed_A_(12.00_x_9.00_Inches)"
+     },
+     "41" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ARCH full bleed A (9.00 x 12.00 polegadas)",
+      "media_description_name" : "ARCH_full_bleed_A_Portrait_9.00W_x_12.00H_-_(,_)_x_(229,_305)_=69677_MM",
+      "media_group" : 0,
+      "name" : "ARCH_full_bleed_A_(9.00_x_12.00_Inches)"
+     },
+     "42" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ARCH full bleed B (12.00 x 18.00 polegadas)",
+      "media_description_name" : "ARCH_full_bleed_B_Portrait_12.00W_x_18.00H_-_(,_)_x_(305,_457)_=139355_MM",
+      "media_group" : 0,
+      "name" : "ARCH_full_bleed_B_(12.00_x_18.00_Inches)"
+     },
+     "43" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ARCH full bleed B (18.00 x 12.00 polegadas)",
+      "media_description_name" : "ARCH_full_bleed_B_Landscape_18.00W_x_12.00H_-_(,_)_x_(457,_305)_=139355_MM",
+      "media_group" : 0,
+      "name" : "ARCH_full_bleed_B_(18.00_x_12.00_Inches)"
+     },
+     "44" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ARCH full bleed C (18.00 x 24.00 polegadas)",
+      "media_description_name" : "ARCH_full_bleed_C_Portrait_18.00W_x_24.00H_-_(,_)_x_(457,_610)_=278709_MM",
+      "media_group" : 0,
+      "name" : "ARCH_full_bleed_C_(18.00_x_24.00_Inches)"
+     },
+     "45" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ARCH full bleed C (24.00 x 18.00 polegadas)",
+      "media_description_name" : "ARCH_full_bleed_C_Landscape_24.00W_x_18.00H_-_(,_)_x_(610,_457)_=278709_MM",
+      "media_group" : 0,
+      "name" : "ARCH_full_bleed_C_(24.00_x_18.00_Inches)"
+     },
+     "46" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ARCH full bleed D (24.00 x 36.00 polegadas)",
+      "media_description_name" : "ARCH_full_bleed_D_Portrait_24.00W_x_36.00H_-_(,_)_x_(610,_914)_=557418_MM",
+      "media_group" : 0,
+      "name" : "ARCH_full_bleed_D_(24.00_x_36.00_Inches)"
+     },
+     "47" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ARCH full bleed D (36.00 x 24.00 polegadas)",
+      "media_description_name" : "ARCH_full_bleed_D_Landscape_36.00W_x_24.00H_-_(,_)_x_(914,_610)_=557418_MM",
+      "media_group" : 0,
+      "name" : "ARCH_full_bleed_D_(36.00_x_24.00_Inches)"
+     },
+     "48" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ARCH full bleed E (36.00 x 48.00 polegadas)",
+      "media_description_name" : "ARCH_full_bleed_E_Portrait_36.00W_x_48.00H_-_(,_)_x_(914,_1219)_=1114836_MM",
+      "media_group" : 0,
+      "name" : "ARCH_full_bleed_E_(36.00_x_48.00_Inches)"
+     },
+     "49" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ARCH full bleed E1 (30.00 x 42.00 polegadas)",
+      "media_description_name" : "ARCH_full_bleed_E1_Portrait_30.00W_x_42.00H_-_(,_)_x_(762,_1067)_=812902_MM",
+      "media_group" : 0,
+      "name" : "ARCH_full_bleed_E1_(30.00_x_42.00_Inches)"
+     },
+     "5" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ANSI C (22,00 x 17,00 polegadas)",
+      "media_description_name" : "ANSI_C_Landscape_22.00W_x_17.00H_-_(17,_554)_x_(415,_559)_=218313_MM",
+      "media_group" : 0,
+      "name" : "ANSI_C_(22.00_x_17.00_Inches)"
+     },
+     "50" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ISO A0 (841,00 x 1189,00 mm)",
+      "media_description_name" : "ISO_A0_Portrait_841.00W_x_1189.00H_-_(5,_17)_x_(836,_1172)_=959805_MM",
+      "media_group" : 4,
+      "name" : "ISO_A0_(841.00_x_1189.00_MM)"
+     },
+     "51" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ISO A1 (594,00 x 841,00 mm)",
+      "media_description_name" : "ISO_A1_Portrait_594.00W_x_841.00H_-_(5,_17)_x_(589,_824)_=471288_MM",
+      "media_group" : 4,
+      "name" : "ISO_A1_(594.00_x_841.00_MM)"
+     },
+     "52" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ISO A1 (841,00 x 594,00 mm)",
+      "media_description_name" : "ISO_A1_Landscape_841.00W_x_594.00H_-_(5,_17)_x_(836,_577)_=465360_MM",
+      "media_group" : 4,
+      "name" : "ISO_A1_(841.00_x_594.00_MM)"
+     },
+     "53" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ISO A2 (420,00 x 594,00 mm)",
+      "media_description_name" : "ISO_A2_Portrait_420.00W_x_594.00H_-_(5,_17)_x_(415,_577)_=229600_MM",
+      "media_group" : 4,
+      "name" : "ISO_A2_(420.00_x_594.00_MM)"
+     },
+     "54" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ISO A2 (594,00 x 420,00 mm)",
+      "media_description_name" : "ISO_A2_Landscape_594.00W_x_420.00H_-_(5,_17)_x_(589,_403)_=225424_MM",
+      "media_group" : 4,
+      "name" : "ISO_A2_(594.00_x_420.00_MM)"
+     },
+     "55" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ISO A3 (297,00 x 420,00 mm)",
+      "media_description_name" : "ISO_A3_Portrait_297.00W_x_420.00H_-_(5,_17)_x_(292,_403)_=110782_MM",
+      "media_group" : 4,
+      "name" : "ISO_A3_(297.00_x_420.00_MM)"
+     },
+     "56" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ISO A3 (420,00 x 297,00 mm)",
+      "media_description_name" : "ISO_A3_Landscape_420.00W_x_297.00H_-_(5,_17)_x_(415,_280)_=107830_MM",
+      "media_group" : 4,
+      "name" : "ISO_A3_(420.00_x_297.00_MM)"
+     },
+     "57" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ISO A4 (210,00 x 297,00 mm)",
+      "media_description_name" : "ISO_A4_Portrait_210.00W_x_297.00H_-_(5,_17)_x_(205,_280)_=52600_MM",
+      "media_group" : 4,
+      "name" : "ISO_A4_(210.00_x_297.00_MM)"
+     },
+     "58" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ISO A4 (297,00 x 210,00 mm)",
+      "media_description_name" : "ISO_A4_Landscape_297.00W_x_210.00H_-_(5,_17)_x_(292,_193)_=50512_MM",
+      "media_group" : 4,
+      "name" : "ISO_A4_(297.00_x_210.00_MM)"
+     },
+     "59" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ISO expand A0 (841,00 x 1189,00 mm)",
+      "media_description_name" : "ISO_expand_A0_Portrait_841.00W_x_1189.00H_-_(5,_10)_x_(836,_1179)_=971439_MM",
+      "media_group" : 5,
+      "name" : "ISO_expand_A0_(841.00_x_1189.00_MM)"
+     },
+     "6" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ANSI D (22,00 x 34,00 polegadas)",
+      "media_description_name" : "ANSI_D_Portrait_22.00W_x_34.00H_-_(17,_554)_x_(847,_559)_=455284_MM",
+      "media_group" : 0,
+      "name" : "ANSI_D_(22.00_x_34.00_Inches)"
+     },
+     "60" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ISO expand A1 (594,00 x 841,00 mm)",
+      "media_description_name" : "ISO_expand_A1_Portrait_594.00W_x_841.00H_-_(5,_10)_x_(589,_831)_=479464_MM",
+      "media_group" : 5,
+      "name" : "ISO_expand_A1_(594.00_x_841.00_MM)"
+     },
+     "61" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ISO expand A1 (841,00 x 594,00 mm)",
+      "media_description_name" : "ISO_expand_A1_Landscape_841.00W_x_594.00H_-_(5,_10)_x_(836,_584)_=476994_MM",
+      "media_group" : 5,
+      "name" : "ISO_expand_A1_(841.00_x_594.00_MM)"
+     },
+     "62" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ISO expand A2 (420,00 x 594,00 mm)",
+      "media_description_name" : "ISO_expand_A2_Portrait_420.00W_x_594.00H_-_(5,_10)_x_(415,_584)_=235340_MM",
+      "media_group" : 5,
+      "name" : "ISO_expand_A2_(420.00_x_594.00_MM)"
+     },
+     "63" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ISO expand A2 (594,00 x 420,00 mm)",
+      "media_description_name" : "ISO_expand_A2_Landscape_594.00W_x_420.00H_-_(5,_10)_x_(589,_410)_=233600_MM",
+      "media_group" : 5,
+      "name" : "ISO_expand_A2_(594.00_x_420.00_MM)"
+     },
+     "64" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ISO expand A3 (297,00 x 420,00 mm)",
+      "media_description_name" : "ISO_expand_A3_Portrait_297.00W_x_420.00H_-_(5,_10)_x_(292,_410)_=114800_MM",
+      "media_group" : 5,
+      "name" : "ISO_expand_A3_(297.00_x_420.00_MM)"
+     },
+     "65" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ISO expand A3 (420,00 x 297,00 mm)",
+      "media_description_name" : "ISO_expand_A3_Landscape_420.00W_x_297.00H_-_(5,_10)_x_(415,_287)_=113570_MM",
+      "media_group" : 5,
+      "name" : "ISO_expand_A3_(420.00_x_297.00_MM)"
+     },
+     "66" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ISO expand A4 (210,00 x 297,00 mm)",
+      "media_description_name" : "ISO_expand_A4_Portrait_210.00W_x_297.00H_-_(5,_10)_x_(205,_287)_=55400_MM",
+      "media_group" : 5,
+      "name" : "ISO_expand_A4_(210.00_x_297.00_MM)"
+     },
+     "67" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ISO expand A4 (297,00 x 210,00 mm)",
+      "media_description_name" : "ISO_expand_A4_Landscape_297.00W_x_210.00H_-_(5,_10)_x_(292,_200)_=54530_MM",
+      "media_group" : 5,
+      "name" : "ISO_expand_A4_(297.00_x_210.00_MM)"
+     },
+     "68" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ISO full bleed 2A0 (1189.00 x 1682.00 mm)",
+      "media_description_name" : "ISO_full_bleed_2A0_Portrait_1189.00W_x_1682.00H_-_(,_)_x_(1189,_1682)_=1999898_MM",
+      "media_group" : 5,
+      "name" : "ISO_full_bleed_2A0_(1189.00_x_1682.00_MM)"
+     },
+     "69" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ISO full bleed 4A0 (1682.00 x 2378.00 mm)",
+      "media_description_name" : "ISO_full_bleed_4A0_Portrait_1682.00W_x_2378.00H_-_(,_)_x_(1682,_2378)_=3999796_MM",
+      "media_group" : 5,
+      "name" : "ISO_full_bleed_4A0_(1682.00_x_2378.00_MM)"
+     },
+     "7" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ANSI D (34,00 x 22,00 polegadas)",
+      "media_description_name" : "ANSI_D_Landscape_34.00W_x_22.00H_-_(17,_859)_x_(542,_864)_=447969_MM",
+      "media_group" : 0,
+      "name" : "ANSI_D_(34.00_x_22.00_Inches)"
+     },
+     "70" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ISO full bleed A0 (841.00 x 1189.00 mm)",
+      "media_description_name" : "ISO_full_bleed_A0_Portrait_841.00W_x_1189.00H_-_(,_)_x_(841,_1189)_=999949_MM",
+      "media_group" : 5,
+      "name" : "ISO_full_bleed_A0_(841.00_x_1189.00_MM)"
+     },
+     "71" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ISO full bleed A1 (594.00 x 841.00 mm)",
+      "media_description_name" : "ISO_full_bleed_A1_Portrait_594.00W_x_841.00H_-_(,_)_x_(594,_841)_=499554_MM",
+      "media_group" : 5,
+      "name" : "ISO_full_bleed_A1_(594.00_x_841.00_MM)"
+     },
+     "72" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ISO full bleed A1 (841.00 x 594.00 mm)",
+      "media_description_name" : "ISO_full_bleed_A1_Landscape_841.00W_x_594.00H_-_(,_)_x_(841,_594)_=499554_MM",
+      "media_group" : 5,
+      "name" : "ISO_full_bleed_A1_(841.00_x_594.00_MM)"
+     },
+     "73" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ISO full bleed A2 (420.00 x 594.00 mm)",
+      "media_description_name" : "ISO_full_bleed_A2_Portrait_420.00W_x_594.00H_-_(,_)_x_(420,_594)_=249480_MM",
+      "media_group" : 5,
+      "name" : "ISO_full_bleed_A2_(420.00_x_594.00_MM)"
+     },
+     "74" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ISO full bleed A2 (594.00 x 420.00 mm)",
+      "media_description_name" : "ISO_full_bleed_A2_Landscape_594.00W_x_420.00H_-_(,_)_x_(594,_420)_=249480_MM",
+      "media_group" : 5,
+      "name" : "ISO_full_bleed_A2_(594.00_x_420.00_MM)"
+     },
+     "75" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ISO full bleed A3 (297.00 x 420.00 mm)",
+      "media_description_name" : "ISO_full_bleed_A3_Portrait_297.00W_x_420.00H_-_(,_)_x_(297,_420)_=124740_MM",
+      "media_group" : 5,
+      "name" : "ISO_full_bleed_A3_(297.00_x_420.00_MM)"
+     },
+     "76" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ISO full bleed A3 (420.00 x 297.00 mm)",
+      "media_description_name" : "ISO_full_bleed_A3_Landscape_420.00W_x_297.00H_-_(,_)_x_(420,_297)_=124740_MM",
+      "media_group" : 5,
+      "name" : "ISO_full_bleed_A3_(420.00_x_297.00_MM)"
+     },
+     "77" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ISO full bleed A4 (210.00 x 297.00 mm)",
+      "media_description_name" : "ISO_full_bleed_A4_Portrait_210.00W_x_297.00H_-_(,_)_x_(210,_297)_=62370_MM",
+      "media_group" : 5,
+      "name" : "ISO_full_bleed_A4_(210.00_x_297.00_MM)"
+     },
+     "78" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ISO full bleed A4 (297.00 x 210.00 mm)",
+      "media_description_name" : "ISO_full_bleed_A4_Landscape_297.00W_x_210.00H_-_(,_)_x_(297,_210)_=62370_MM",
+      "media_group" : 5,
+      "name" : "ISO_full_bleed_A4_(297.00_x_210.00_MM)"
+     },
+     "79" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ISO full bleed A5 (148.00 x 210.00 mm)",
+      "media_description_name" : "ISO_full_bleed_A5_Portrait_148.00W_x_210.00H_-_(,_)_x_(148,_210)_=31080_MM",
+      "media_group" : 5,
+      "name" : "ISO_full_bleed_A5_(148.00_x_210.00_MM)"
+     },
+     "8" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ANSI E (34,00 x 44,00 polegadas)",
+      "media_description_name" : "ANSI_E_Portrait_34.00W_x_44.00H_-_(17,_859)_x_(1101,_864)_=924961_MM",
+      "media_group" : 0,
+      "name" : "ANSI_E_(34.00_x_44.00_Inches)"
+     },
+     "80" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ISO full bleed A5 (210.00 x 148.00 mm)",
+      "media_description_name" : "ISO_full_bleed_A5_Landscape_210.00W_x_148.00H_-_(,_)_x_(210,_148)_=31080_MM",
+      "media_group" : 5,
+      "name" : "ISO_full_bleed_A5_(210.00_x_148.00_MM)"
+     },
+     "81" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ISO full bleed B0 (1000.00 x 1414.00 mm)",
+      "media_description_name" : "ISO_full_bleed_B0_Portrait_1000.00W_x_1414.00H_-_(,_)_x_(1000,_1414)_=1414000_MM",
+      "media_group" : 5,
+      "name" : "ISO_full_bleed_B0_(1000.00_x_1414.00_MM)"
+     },
+     "82" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ISO full bleed B0 (1414.00 x 1000.00 mm)",
+      "media_description_name" : "ISO_full_bleed_B0_Landscape_1414.00W_x_1000.00H_-_(,_)_x_(1414,_1000)_=1414000_MM",
+      "media_group" : 5,
+      "name" : "ISO_full_bleed_B0_(1414.00_x_1000.00_MM)"
+     },
+     "83" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ISO full bleed B1 (1000.00 x 707.00 mm)",
+      "media_description_name" : "ISO_full_bleed_B1_Landscape_1000.00W_x_707.00H_-_(,_)_x_(1000,_707)_=707000_MM",
+      "media_group" : 5,
+      "name" : "ISO_full_bleed_B1_(1000.00_x_707.00_MM)"
+     },
+     "84" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ISO full bleed B1 (707.00 x 1000.00 mm)",
+      "media_description_name" : "ISO_full_bleed_B1_Portrait_707.00W_x_1000.00H_-_(,_)_x_(707,_1000)_=707000_MM",
+      "media_group" : 5,
+      "name" : "ISO_full_bleed_B1_(707.00_x_1000.00_MM)"
+     },
+     "85" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ISO full bleed B2 (500.00 x 707.00 mm)",
+      "media_description_name" : "ISO_full_bleed_B2_Portrait_500.00W_x_707.00H_-_(,_)_x_(500,_707)_=353500_MM",
+      "media_group" : 5,
+      "name" : "ISO_full_bleed_B2_(500.00_x_707.00_MM)"
+     },
+     "86" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ISO full bleed B2 (707.00 x 500.00 mm)",
+      "media_description_name" : "ISO_full_bleed_B2_Landscape_707.00W_x_500.00H_-_(,_)_x_(707,_500)_=353500_MM",
+      "media_group" : 5,
+      "name" : "ISO_full_bleed_B2_(707.00_x_500.00_MM)"
+     },
+     "87" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ISO full bleed B3 (353.00 x 500.00 mm)",
+      "media_description_name" : "ISO_full_bleed_B3_Portrait_353.00W_x_500.00H_-_(,_)_x_(353,_500)_=176500_MM",
+      "media_group" : 5,
+      "name" : "ISO_full_bleed_B3_(353.00_x_500.00_MM)"
+     },
+     "88" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ISO full bleed B3 (500.00 x 353.00 mm)",
+      "media_description_name" : "ISO_full_bleed_B3_Landscape_500.00W_x_353.00H_-_(,_)_x_(500,_353)_=176500_MM",
+      "media_group" : 5,
+      "name" : "ISO_full_bleed_B3_(500.00_x_353.00_MM)"
+     },
+     "89" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ISO full bleed B4 (250.00 x 353.00 mm)",
+      "media_description_name" : "ISO_full_bleed_B4_Portrait_250.00W_x_353.00H_-_(,_)_x_(250,_353)_=88250_MM",
+      "media_group" : 5,
+      "name" : "ISO_full_bleed_B4_(250.00_x_353.00_MM)"
+     },
+     "9" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ANSI expand A (11,00 x 8,50 polegadas)",
+      "media_description_name" : "ANSI_expand_A_Landscape_11.00W_x_8.50H_-_(5,_10)_x_(274,_206)_=52775_MM",
+      "media_group" : 0,
+      "name" : "ANSI_expand_A_(11.00_x_8.50_Inches)"
+     },
+     "90" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ISO full bleed B4 (353.00 x 250.00 mm)",
+      "media_description_name" : "ISO_full_bleed_B4_Landscape_353.00W_x_250.00H_-_(,_)_x_(353,_250)_=88250_MM",
+      "media_group" : 5,
+      "name" : "ISO_full_bleed_B4_(353.00_x_250.00_MM)"
+     },
+     "91" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : false,
+      "localized_name" : "ISO full bleed B5 (176.00 x 250.00 mm)",
+      "media_description_name" : "ISO_full_bleed_B5_Portrait_176.00W_x_250.00H_-_(,_)_x_(176,_250)_=44000_MM",
+      "media_group" : 5,
+      "name" : "ISO_full_bleed_B5_(176.00_x_250.00_MM)"
+     },
+     "92" : 
+     {
+      "caps_type" : 4,
+      "landscape_mode" : true,
+      "localized_name" : "ISO full bleed B5 (250.00 x 176.00 mm)",
+      "media_description_name" : "ISO_full_bleed_B5_Landscape_250.00W_x_176.00H_-_(,_)_x_(250,_176)_=44000_MM",
+      "media_group" : 5,
+      "name" : "ISO_full_bleed_B5_(250.00_x_176.00_MM)"
+     }
+    }
+   }
+  },
+  "meta" : 
+  {
+   "canonical_family_name" : "Autodesk ePlot",
+   "canonical_model_name" : "pdf",
+   "default_system_cfg" : false,
+   "dm_driver_version" : 0,
+   "driver_pathname" : "C:\\Program Files\\Autodesk\\AutoCAD 2026\\drv\\pdfplot17.hdi",
+   "driver_tag_line" : "PDF ePlot - by Autodesk",
+   "driver_type" : 3,
+   "driver_version" : "1.1-17.1.74.0",
+   "file_only" : true,
+   "friendly_net_name" : "",
+   "locale" : "4B00409",
+   "localized_family_name" : "Autodesk ePlot (PDF)",
+   "localized_model_name" : "DWG To PDF",
+   "model_abilities" : "000550055000",
+   "platform" : "2,10,0",
+   "short_net_name" : "",
+   "show_custom_first" : false,
+   "toolkit_version" : 1,
+   "truetype_as_text" : true,
+   "udm_description" : "",
+   "user_defined_model_basename" : "",
+   "user_defined_model_pathname" : "C:\\Users\\Pedro\\OneDrive\\Documentos\\Documentos Pessoais\\Profissional\\Programa\u00e7\u00f5es\\Autots\\AutoCAD\\Auxiliaria AutoCAD\\Plotters\\PMP\\ATS-DWG to PDF.pmp"
+  },
+  "mod" : 
+  {
+   "media" : 
+   {
+    "abilities" : "500005500500505555000005550000000550000500000500000",
+    "caps_state" : "000000000000000000000000000000000000000000000000000",
+    "size_max_x" : 5080.0,
+    "size_max_y" : 5080.0,
+    "ui_owner" : "11111111111111111111000"
+   }
+  },
+  "udm" : 
+  {
+   "calibration" : 
+   {
+    "_x" : 1.0,
+    "_y" : 1.0
+   },
+   "media" : 
+   {
+    "description" : 
+    {
+     "0" : 
+     {
+      "caps_type" : 2,
+      "dimensional" : true,
+      "media_bounds_urx" : 841.0,
+      "media_bounds_ury" : 1189.0,
+      "name" : "UserDefinedMetric Vertical 841.00L x 1189.00A - (0, 0) x (841, 1189) =999949 mm",
+      "printable_area" : 999949.0,
+      "printable_bounds_llx" : 0.0,
+      "printable_bounds_lly" : 0.0,
+      "printable_bounds_urx" : 841.0,
+      "printable_bounds_ury" : 1189.0
+     },
+     "1" : 
+     {
+      "caps_type" : 2,
+      "dimensional" : true,
+      "media_bounds_urx" : 841.0,
+      "media_bounds_ury" : 594.0,
+      "name" : "UserDefinedMetric Horizontal 841.00L x 594.00A - (0, 0) x (841, 594) =499554 mm",
+      "printable_area" : 499554.0,
+      "printable_bounds_llx" : 0.0,
+      "printable_bounds_lly" : 0.0,
+      "printable_bounds_urx" : 841.0,
+      "printable_bounds_ury" : 594.0
+     },
+     "2" : 
+     {
+      "caps_type" : 2,
+      "dimensional" : true,
+      "media_bounds_urx" : 594.0,
+      "media_bounds_ury" : 420.0,
+      "name" : "UserDefinedMetric Horizontal 594.00L x 420.00A - (0, 0) x (594, 420) =249480 mm",
+      "printable_area" : 249480.0,
+      "printable_bounds_llx" : 0.0,
+      "printable_bounds_lly" : 0.0,
+      "printable_bounds_urx" : 594.0,
+      "printable_bounds_ury" : 420.0
+     },
+     "3" : 
+     {
+      "caps_type" : 2,
+      "dimensional" : true,
+      "media_bounds_urx" : 420.0,
+      "media_bounds_ury" : 297.0,
+      "name" : "UserDefinedMetric Horizontal 420.00L x 297.00A - (0, 0) x (420, 297) =124740 mm",
+      "printable_area" : 124740.0,
+      "printable_bounds_llx" : 0.0,
+      "printable_bounds_lly" : 0.0,
+      "printable_bounds_urx" : 420.0,
+      "printable_bounds_ury" : 297.0
+     },
+     "4" : 
+     {
+      "caps_type" : 2,
+      "dimensional" : true,
+      "media_bounds_urx" : 210.0,
+      "media_bounds_ury" : 297.0,
+      "name" : "UserDefinedMetric Vertical 210.00L x 297.00A - (0, 0) x (210, 297) =62370 mm",
+      "printable_area" : 62370.0,
+      "printable_bounds_llx" : 0.0,
+      "printable_bounds_lly" : 0.0,
+      "printable_bounds_urx" : 210.0,
+      "printable_bounds_ury" : 297.0
+     },
+     "5" : 
+     {
+      "caps_type" : 2,
+      "dimensional" : true,
+      "media_bounds_urx" : 1189.0,
+      "media_bounds_ury" : 594.0,
+      "name" : "UserDefinedMetric Horizontal 1189.00L x 594.00A - (0, 0) x (1189, 594) =706266 mm",
+      "printable_area" : 706266.0,
+      "printable_bounds_llx" : 0.0,
+      "printable_bounds_lly" : 0.0,
+      "printable_bounds_urx" : 1189.0,
+      "printable_bounds_ury" : 594.0
+     },
+     "6" : 
+     {
+      "caps_type" : 2,
+      "dimensional" : true,
+      "media_bounds_urx" : 1159.0,
+      "media_bounds_ury" : 841.0,
+      "name" : "UserDefinedMetric Horizontal 1159.00L x 841.00A - (0, 0) x (1159, 841) =974719 mm",
+      "printable_area" : 974719.0,
+      "printable_bounds_llx" : 0.0,
+      "printable_bounds_lly" : 0.0,
+      "printable_bounds_urx" : 1159.0,
+      "printable_bounds_ury" : 841.0
+     }
+    },
+    "size" : 
+    {
+     "0" : 
+     {
+      "caps_type" : 2,
+      "landscape_mode" : false,
+      "localized_name" : "A0",
+      "media_description_name" : "UserDefinedMetric Vertical 841.00L x 1189.00A - (0, 0) x (841, 1189) =999949 mm",
+      "media_group" : 15,
+      "name" : "UserDefinedMetric (841.00 x 1189.00mm)"
+     },
+     "1" : 
+     {
+      "caps_type" : 2,
+      "landscape_mode" : true,
+      "localized_name" : "A0 Estendido",
+      "media_description_name" : "UserDefinedMetric Horizontal 1159.00L x 841.00A - (0, 0) x (1159, 841) =974719 mm",
+      "media_group" : 15,
+      "name" : "UserDefinedMetric (1159.00 x 841.00mm)"
+     },
+     "2" : 
+     {
+      "caps_type" : 2,
+      "landscape_mode" : true,
+      "localized_name" : "A1",
+      "media_description_name" : "UserDefinedMetric Horizontal 841.00L x 594.00A - (0, 0) x (841, 594) =499554 mm",
+      "media_group" : 15,
+      "name" : "UserDefinedMetric (841.00 x 594.00mm)"
+     },
+     "3" : 
+     {
+      "caps_type" : 2,
+      "landscape_mode" : true,
+      "localized_name" : "A1 Estendido",
+      "media_description_name" : "UserDefinedMetric Horizontal 1189.00L x 594.00A - (0, 0) x (1189, 594) =706266 mm",
+      "media_group" : 15,
+      "name" : "UserDefinedMetric (1189.00 x 594.00mm)"
+     },
+     "4" : 
+     {
+      "caps_type" : 2,
+      "landscape_mode" : true,
+      "localized_name" : "A2",
+      "media_description_name" : "UserDefinedMetric Horizontal 594.00L x 420.00A - (0, 0) x (594, 420) =249480 mm",
+      "media_group" : 15,
+      "name" : "UserDefinedMetric (594.00 x 420.00mm)"
+     },
+     "5" : 
+     {
+      "caps_type" : 2,
+      "landscape_mode" : true,
+      "localized_name" : "A3",
+      "media_description_name" : "UserDefinedMetric Horizontal 420.00L x 297.00A - (0, 0) x (420, 297) =124740 mm",
+      "media_group" : 15,
+      "name" : "UserDefinedMetric (420.00 x 297.00mm)"
+     },
+     "6" : 
+     {
+      "caps_type" : 2,
+      "landscape_mode" : false,
+      "localized_name" : "A4",
+      "media_description_name" : "UserDefinedMetric Vertical 210.00L x 297.00A - (0, 0) x (210, 297) =62370 mm",
+      "media_group" : 15,
+      "name" : "UserDefinedMetric (210.00 x 297.00mm)"
+     }
+    }
+   }
+  }
+ },
+ "subver" : "json",
+ "version" : 0.01
+}
