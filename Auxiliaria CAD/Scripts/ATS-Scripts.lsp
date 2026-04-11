@@ -18,9 +18,10 @@
    |;
 (DEFUN ATS:LoadScripts (preset / routinesFolder presetPath)
   ;; Define variáveis globais
+  (SETQ *CADSoftware* (GETVAR "PRODUCT"))
+  (SETQ *CADLanguage* (IF (EQ *CADSoftware* "AutoCAD") (VL-REGISTRY-READ (STRCAT "HKEY_LOCAL_MACHINE\\" (VLAX-PRODUCT-KEY)) "Language")))
   (SETQ *acadObject* (VLAX-GET-ACAD-OBJECT))
   (SETQ *activeDocument* (VLA-GET-ACTIVEDOCUMENT *acadObject*))
-  (SETQ *applicationLanguage* (VL-REGISTRY-READ (STRCAT "HKEY_LOCAL_MACHINE\\" (VLAX-PRODUCT-KEY)) "Language"))
   ;; Carrega o preset Autots
   (SETQ presetPath (ATS:EvaluateStringSymbolList *presetsFolder*))
   (IF (AND *firstStart* (VL-CATCH-ALL-ERROR-P (VL-CATCH-ALL-APPLY (FUNCTION LOAD) (LIST (STRCAT presetPath "Autots.lsp")))))

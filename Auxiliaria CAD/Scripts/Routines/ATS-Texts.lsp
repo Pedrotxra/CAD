@@ -557,11 +557,11 @@
   )
 )
 
-;| Escreve uma mensagem de log no arquivo de texto padrão
+;| Registra a entrada de um comando
    @global
    @param commandName [str] - Nome do comando que gerou o log
-   @param errorMessage [str] - Mensagem de erro a ser registrada, ou 'nil' para não registrar no log
-   @returns [nil] - Não retorna nenhum valor
+   @param errorMessage [str] - Mensagem de erro a ser registrada, ou 'nil' para não registrar entrada
+   @returns [nil] - Registra a entrada no log
    |;
 (DEFUN ATS:WriteLog (commandName errorMessage / currentDateAndTime dwgFile scriptsLogFile)
   (SETQ scriptsLogFile (OPEN (STRCAT (ATS:EvaluateStringSymbolList *scriptsLogFolder*) *scriptsLog*) "A"))

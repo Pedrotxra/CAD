@@ -187,9 +187,25 @@
   (COMMAND-S "_.WIPEOUT")
 )
 
+;| Atalho para 'LINE'
+   @returns nil
+   |;
+(DEFUN C:W ()
+  (ATS:WriteLog "W" nil)
+  (COMMAND-S "_.LINE")
+)
+
+;| Atalho para 'PLINE'
+   @returns nil
+   |;
+(DEFUN C:WW ()
+  (ATS:WriteLog "WW" nil)
+  (COMMAND-S "_.PLINE")
+)
+
 ;;; Atalhos para CAD em idioma fora do inglês
 (COND
-  ((EQ *applicationLanguage* "Português - Brasil")
+  ((EQ *CADLanguage* "Português - Brasil")
    (SETQ *functionCancelled* "Função cancelada")
 
    ;| Atalho para 'APPLOAD'

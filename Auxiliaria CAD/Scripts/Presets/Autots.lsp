@@ -17,10 +17,11 @@
           (SETQ *attachmentsFolderName* (LIST (QUOTE *designFolder*) "Anexos\\"))
           (SETQ *backupFolderName* (LIST (QUOTE *designFolder*) "Backup\\"))
           (SETQ *projectGuidelinesFolderName* (LIST (QUOTE *designFolder*) "Diretrizes\\"))
+            (SETQ *sketchesFolderName* (LIST (QUOTE *projectGuidelinesFolderName*) "Esboços\\"))
+            (SETQ *referencesFolderName* (LIST (QUOTE *projectGuidelinesFolderName*) "Referências\\"))
           (SETQ *emissionFolderName* (LIST (QUOTE *designFolder*) "Emissões\\"))
             ;; Pasta da etapa
               ;; Emissão Inicial, Revisão 01, Revisão 02...
-          (SETQ *sketchesFolderName* (LIST (QUOTE *designFolder*) "Esboços\\"))
           (SETQ *recievedFilesFolderName* (LIST (QUOTE *designFolder*) "Recebidos\\"))
             ;; Recebido 01, Recebido 02, Recebido 03...
           (SETQ *photosFolderName* (LIST (QUOTE *designFolder*) "Fotos\\"))
@@ -36,7 +37,7 @@
         (SETQ *hatchesFolder* (LIST (QUOTE *auxiliaryFolder*) "Hachuras\\"))
         (SETQ *linetypesFolder* (LIST (QUOTE *auxiliaryFolder*) "Linetypes\\"))
         (SETQ *plottersFolder* (LIST (QUOTE *auxiliaryFolder*) "Plotters\\"))
-          (SETQ *standardPlotter* "ATS-DWG To PDF.pc3")
+          (SETQ *standardPlotter* (STRCAT "ATS-DWG To PDF.pc" (IF (EQ *CADSoftware* "ZWCAD") "5" "3")))
             (SETQ *sheetsSizes* (LIST ; Nome do bloco da folha e suas dimensões a partir do ponto base
                                   (CONS "A0 Estendido" (LIST -155.9 84.1))
                                   (CONS "A0" (LIST -118.9 84.1))
@@ -344,7 +345,7 @@
                         (CONS "PresetRotation" T)
                         (CONS "Rotation" 0.0)
                         (CONS "Color" "_BYLAYER")
-                        (CONS "BackgroundColor" (LIST "GR_LINEAR" "_TWO" "_TRUE" "16,86,137" "_TRUE" "122,175,223"))
+                        (CONS "BackgroundColor" (LIST (STRCAT (IF (EQ *CADSoftware* "ZWCAD") "" "GR_") "LINEAR") "_TWO" "_TRUE" "16,86,137" "_TRUE" "122,175,223"))
                         (CONS "Layer" (QUOTE *solidLayer*))
                         (CONS "Transparency" "_BYLAYER")))
 

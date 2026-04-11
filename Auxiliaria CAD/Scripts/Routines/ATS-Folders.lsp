@@ -17,26 +17,22 @@
    @returns [nil] - Configura o CAD com as pastas definidas
    |;
 (DEFUN ATS:SetPaths (sharedFolders automaticConfig / files folder)
-  (SETQ *configurationFolder* (STRCAT (GETENV "ACADCFG") "\\"))
-  (SETQ *roamingFolder* (VL-STRING-SUBST "Roaming" "Local" *configurationFolder*))
+  (SETQ *configurationFolder* (GETVAR "LOCALROOTPREFIX"))
+  (SETQ *roamingFolder* (GETVAR "ROAMABLEROOTPREFIX"))
   (SETQ files (ATS:SaveObject (VLA-GET-FILES (ATS:SaveObject (VLA-GET-PREFERENCES *acadObject*)))))
   (SETQ folder (VL-REMOVE-IF (FUNCTION (LAMBDA (path) (WCMATCH path (STRCAT *autotsFolder* "*")))) (ATS:StringToList ";" (VLA-GET-SUPPORTPATH files))))
   (IF sharedFolders
-    (SETQ folder (VL-REMOVE-IF (FUNCTION (LAMBDA (path)
-                                           (OR
-                                             (WCMATCH path "*\\Adaptações\\")
-                                             (AND
-                                               (WCMATCH path "*\\Adaptações\\*")
-                                               (NOT (EQ (ATS:ReplaceAllInString "" " " (ATS:GetSubstring "\\Adaptações\\" "\\" path)) *preset*))))))
-                               (APPEND (ATS:GetSubfoldersPaths (ATS:EvaluateStringSymbolList *blocksFolder*) nil) (ATS:GetSubfoldersPaths (ATS:EvaluateStringSymbolList *hatchesFolder*) nil) folder)))
+    (SETQ folder (APPEND (ATS:GetSubfoldersPaths (ATS:EvaluateStringSymbolList *blocksFolder*) nil)
+                         (ATS:GetSubfoldersPaths (ATS:EvaluateStringSymbolList *hatchesFolder*) nil)
+                         folder))
     (PROGN
       ;; Pasta de configurações locais do CAD
         (SETQ *templatesFolder* (LIST (QUOTE *configurationFolder*) "Template\\"))
-          (SETQ *template* "acadiso.dwt")
+          (SETQ *template* (STRCAT (IF (EQ *CADSoftware* "ZWCAD") "zw" "a") "cadiso.dwt"))
       ;; Pasta de configurações itinerantes do CAD
         (SETQ *scriptsLogFolder* (LIST (QUOTE *roamingFolder*) "Logs\\"))
         (SETQ *plottersFolder* (LIST (QUOTE *roamingFolder*) "Plotters\\"))
-          (SETQ *standardPlotter* "DWG To PDF.pc3")
+          (SETQ *standardPlotter* (STRCAT "DWG To PDF.pc" (IF (EQ *CADSoftware* "ZWCAD") "5" "3")))
             (SETQ *sheetsSizes* (LIST ; Nome do bloco da folha e suas dimensões em centímetros, com relação ao ponto base
                                   (CONS "ISO full bleed A0 (1189.00 x 841.00 mm)" (LIST 118.9 84.1))
                                   (CONS "ISO full bleed A0 (841.00 x 1189.00 mm)" (LIST 84.1 118.9))
@@ -68,7 +64,7 @@
       (IF (AND *blocksFolder* (SETQ folder (VL-REMOVE-IF-NOT (FUNCTION VL-FILE-DIRECTORY-P) folder)))
         (VLA-PUT-SUPPORTPATH files (ATS:ListToString ";" folder))
       )
-      (IF (AND *customUserInterfaceFolder* (SETQ folder (ATS:EvaluateStringSymbolList *customUserInterfaceFolder*)) (VL-FILE-DIRECTORY-P folder))
+      (IF (AND (NOT (EQ *CADSoftware* "ZWCAD")) *customUserInterfaceFolder* (SETQ folder (ATS:EvaluateStringSymbolList *customUserInterfaceFolder*)) (VL-FILE-DIRECTORY-P folder))
         (PROGN
           (IF (AND *enterpriseMenuFile* (FINDFILE (SETQ folder (STRCAT folder *enterpriseMenuFile*))))
             (VLA-PUT-ENTERPRISEMENUFILE files folder)
@@ -218,6 +214,19 @@
   (IF folder
     (STRCAT (VLAX-GET-PROPERTY (ATS:SaveObject (VLAX-GET-PROPERTY folder "SELF")) "PATH") "\\")
   )
+)
+
+;| Obtém o tamanho de um arquivo
+   @global
+   @param unit [bool] - 'T' para megabytes, ou 'nil' para kilobytes
+   @param filePath [str] - Caminho do arquivo, ou 'nil' para arquivo atual
+   @returns [real] - Tamanho do arquivo
+   |;
+(DEFUN ATS:GetFileSize (unit filePath)
+  (IF (NOT filePath)
+    (SETQ filePath (VLA-GET-FullName *activeDocument*))
+  )
+  (SETQ fileSize (/ (FLOAT (VL-FILE-SIZE filePath)) (EXPT 1024 (IF unit 2 1))))
 )
 
 ;| Abre a pasta de temporários

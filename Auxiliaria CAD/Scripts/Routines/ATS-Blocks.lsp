@@ -7,10 +7,11 @@
    @returns [any] - Valor da propriedade ou lista dos valores
    |;
 (DEFUN ATS:GetDynamicBlockProperties (asVariant wildcardMatch blockObject searchNames / blockProperties foundProperty searchNamesLength property propertyName)
-  (IF (VLAX-METHOD-APPLICABLE-P blockObject "GetDynamicBlockProperties")
+  (IF (AND (VLAX-METHOD-APPLICABLE-P blockObject "GetDynamicBlockProperties")
+           ;; Obtém todas as propriedades em forma de objetos
+           (SETQ blockProperties (VLAX-INVOKE-METHOD blockObject "GetDynamicBlockProperties"))
+           (SETQ blockProperties (VLAX-SAFEARRAY->LIST (VLAX-VARIANT-VALUE blockProperties))))
     (PROGN
-      ;; Obtém todas as propriedades em forma de objetos
-      (SETQ blockProperties (VLAX-INVOKE blockObject (FUNCTION GetDynamicBlockProperties)))
       (IF (EQ (TYPE searchNames) (READ "STR"))
         (PROGN
           ;; Itera as propriedades até encontrar a de nome procurado
@@ -80,13 +81,16 @@
    @returns [any] - Valor da propriedade ou lista dos valores
    |;
 (DEFUN ATS:ChangeDynamicBlockPropertiesValues (wildcardMatch blockObject property-valueList / entityName basePoint blockProperties property propertyName property-value)
-  (IF (VLAX-METHOD-APPLICABLE-P blockObject "GetDynamicBlockProperties")
+  (IF (AND (VLAX-METHOD-APPLICABLE-P blockObject "GetDynamicBlockProperties")
+           ;; Obtém todas as propriedades em forma de objetos
+           (SETQ blockProperties (VLAX-INVOKE-METHOD blockObject "GetDynamicBlockProperties"))
+           (SETQ blockProperties (VLAX-SAFEARRAY->LIST (VLAX-VARIANT-VALUE blockProperties))))
     (PROGN
       (SETQ entityName (VLAX-VLA-OBJECT->ENAME blockObject))
       ;; Salva o ponto base, caso ele seja movido no processo
       (SETQ basePoint (ATS:GetPropertiesValues 10 entityName))
       ;; Ordena as propriedades para que a de visibilidade seja alterada primeiramente
-      (SETQ blockProperties (VL-SORT (VLAX-INVOKE blockObject (FUNCTION GetDynamicBlockProperties)) (FUNCTION (LAMBDA (property1 property2) (EQ (TYPE (VLAX-GET property1 "Value")) (READ "STR"))))))
+      (SETQ blockProperties (VL-SORT blockProperties (FUNCTION (LAMBDA (property1 property2) (EQ (TYPE (VLAX-GET property1 "Value")) (READ "STR"))))))
       (WHILE (AND property-valueList blockProperties)
         (SETQ property (ATS:SaveObject (CAR blockProperties)))
         (SETQ blockProperties (VL-REMOVE property blockProperties))
@@ -304,6 +308,34 @@
     )
     (PROMPT "\nNão foi possível identificar o círculo de referência.\n")
   )
+)
+
+;| Aplica uma função em todos os níveis de um bloco
+   @global
+   @param blockName [str] - Nome do bloco
+   @param applyFunction [subr] - Função
+   @returns [any] - Função aplicada
+   |;
+(DEFUN ATS:ApplyToAllNestedItems (blockName applyFunction / ApplyToAllNestedItems blocksCollection blocksList)
+  (DEFUN ApplyToAllNestedItems (blockName)
+    (VLAX-FOR item (ATS:SaveObject (VLA-ITEM blocksCollection blockName))
+      (ATS:SaveObject item)
+      (IF (EQ (VLA-GET-ObjectName item) "AcDbBlockReference")
+        (PROGN
+          (SETQ blockName (VLAX-GET-PROPERTY item "EffectiveName"))
+          (IF (NOT (MEMBER blockName blocksList))
+            (PROGN
+              (ApplyToAllNestedItems blockName)
+              (SETQ blocksList (CONS blockName blocksList))
+            )
+          )
+        )
+      )
+      (APPLY (FUNCTION applyFunction) (LIST item))
+    )
+  )
+  (SETQ blocksCollection (ATS:SaveObject (VLA-GET-BLOCKS *activeDocument*)))
+  (ApplyToAllNestedItems blockName)
 )
 
 ;| Cria um bloco com nome aleatório

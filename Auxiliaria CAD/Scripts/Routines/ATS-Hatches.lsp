@@ -92,16 +92,23 @@
         (COMMAND (CAR color) (CADR color))
         (COMMAND color)
       )
+      (IF (EQ *CADSoftware* "ZWCAD")
+        (COMMAND ".")
+      )
     )
     ;; Caso seja um gradiente, aplica o tipo e a(s) cor(es)
     ((EQ pattern "_GRADIENT")
       (COMMAND "SOLID" "" "_.-HATCH" "_PROPERTIES" pattern (CAR backgroundColor) rotation "_YES" "_PROPERTIES" pattern) ; É preciso reiniciar o comando com a hachura anterior sólida para não perguntar cor de fundo, pois reiniciar com hachura gradiente não fica salvo o padrão
       (APPLY (FUNCTION COMMAND) (CDR backgroundColor))
-      (COMMAND "_COLOR")
-      (IF (LISTP color)
-        (COMMAND (CAR color) (CADR color))
-        (COMMAND color)
-      )
+     (IF (NOT (EQ *CADSoftware* "ZWCAD"))
+       (PROGN
+          (COMMAND "_COLOR")
+          (IF (LISTP color)
+            (COMMAND (CAR color) (CADR color))
+            (COMMAND color)
+          )
+       )
+     )
     )
     ;; Caso contrário, aplica a escala, rotação, cor e cor de fundo
     (T

@@ -570,7 +570,7 @@
                         (list "Dimension Styles"        (steal:getprop acdoc 'dimstyles)             (steal:getprop dbdoc 'dimstyles))
                         (list "Layouts"                 (steal:getprop acdoc 'layouts)               (steal:getprop dbdoc 'layouts))
                         (list "Views"                   (steal:getprop acdoc 'views)                 (steal:getprop dbdoc 'views))
-                        (list "Materials"               (steal:getprop acdoc 'materials)             (steal:getprop dbdoc 'materials))
+                       ;(list "Materials"               (steal:getprop acdoc 'materials)             (steal:getprop dbdoc 'materials))
                         (list "Viewports"               (steal:getprop acdoc 'viewports)             (steal:getprop dbdoc 'viewports))
                         (list "Page Setups"             (steal:getprop acdoc 'plotconfigurations)    (steal:getprop dbdoc 'plotconfigurations))
                         (list "User Coordinate Systems" (steal:getprop acdoc 'usercoordinatesystems) (steal:getprop dbdoc 'usercoordinatesystems))

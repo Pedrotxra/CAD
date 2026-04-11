@@ -124,7 +124,7 @@
             (not (vlax-property-available-p obj 'path))
             (vlax-write-enabled-p  obj)
             (or (and (LM:usblock-p obj)
-                     (not (vl-catch-all-error-p (setq err (vl-catch-all-apply 'vlax-invoke (list obj 'explode)))))
+                     (not (vl-catch-all-error-p (setq err (vl-catch-all-apply (FUNCTION vlax-invoke-METHOD) (list obj "explode")))))
                      (setq lst err)
                 )
                 (progn
@@ -150,66 +150,70 @@
                   col (vla-get-color    obj)
                   lin (vla-get-linetype obj)
             )
-            (foreach att (vlax-invoke obj 'getattributes)
-                (if (vlax-write-enabled-p att)
-                    (progn
-                        (if (= "0" (vla-get-layer att))
-                            (vla-put-layer att lay)
-                        )
-                        (if (= acbyblock (vla-get-color att))
-                            (vla-put-color att col)
-                        )
-                        (if (= "byblock" (strcase (vla-get-linetype att) t))
-                            (vla-put-linetype att lin)
+            (IF (EQ :VLAX-TRUE (VLA-GET-HasAttributes obj))
+                (foreach att (VLAX-SAFEARRAY->LIST (VLAX-VARIANT-VALUE (vlax-invoke-METHOD obj "getattributes")))
+                    (if (vlax-write-enabled-p att)
+                        (progn
+                            (if (= "0" (vla-get-layer att))
+                                (vla-put-layer att lay)
+                            )
+                            (if (= acbyblock (vla-get-color att))
+                                (vla-put-color att col)
+                            )
+                            (if (= "byblock" (strcase (vla-get-linetype att) t))
+                                (vla-put-linetype att lin)
+                            )
                         )
                     )
-                )
-                (if
-                    (and
-                        (= :vlax-false (vla-get-invisible att))
-                        (= :vlax-true  (vla-get-visible   att))
-                    )
-                    (   (if (and (vlax-property-available-p att 'mtextattribute) (= :vlax-true (vla-get-mtextattribute att)))
-                            LM:burst:matt2mtext 
-                            LM:burst:att2text
+                    (if
+                        (and
+                            (= :vlax-false (vla-get-invisible att))
+                            (= :vlax-true  (vla-get-visible   att))
                         )
-                        (entget (vlax-vla-object->ename att))
+                        (   (if (and (vlax-property-available-p att 'mtextattribute) (= :vlax-true (vla-get-mtextattribute att)))
+                                LM:burst:matt2mtext 
+                                LM:burst:att2text
+                            )
+                            (entget (vlax-vla-object->ename att))
+                        )
                     )
                 )
             )
-            (foreach new lst
-                (cond
-                    (   (not (vlax-write-enabled-p new)))
-                    (   (= :vlax-false (vla-get-visible new))
-                        (vla-delete new)
-                    )
-                    (   t
-                        (if (= "0" (vla-get-layer new))
-                            (vla-put-layer new lay)
+            (IF (LISTP lst)
+                (foreach new lst
+                    (cond
+                        (   (not (vlax-write-enabled-p new)))
+                        (   (= :vlax-false (vla-get-visible new))
+                            (vla-delete new)
                         )
-                        (if (= acbyblock (vla-get-color new))
-                            (vla-put-color new col)
-                        )
-                        (if (= "byblock" (strcase (vla-get-linetype new) t))
-                            (vla-put-linetype new lin)
-                        )
-                        (if (= "AcDbAttributeDefinition" (vla-get-objectname new))
-                            (progn
-                                (if
-                                    (and
-                                        (= :vlax-true  (vla-get-constant  new))
-                                        (= :vlax-false (vla-get-invisible new))
-                                    )
-                                    (   (if (and (vlax-property-available-p new 'mtextattribute) (= :vlax-true (vla-get-mtextattribute new)))
-                                            LM:burst:matt2mtext 
-                                            LM:burst:att2text
-                                        )
-                                        (entget (vlax-vla-object->ename new))
-                                    )
-                                )
-                                (vla-delete new)
+                        (   t
+                            (if (= "0" (vla-get-layer new))
+                                (vla-put-layer new lay)
                             )
-                            (if nst (LM:burstobject new nst))
+                            (if (= acbyblock (vla-get-color new))
+                                (vla-put-color new col)
+                            )
+                            (if (= "byblock" (strcase (vla-get-linetype new) t))
+                                (vla-put-linetype new lin)
+                            )
+                            (if (= "AcDbAttributeDefinition" (vla-get-objectname new))
+                                (progn
+                                    (if
+                                        (and
+                                            (= :vlax-true  (vla-get-constant  new))
+                                            (= :vlax-false (vla-get-invisible new))
+                                        )
+                                        (   (if (and (vlax-property-available-p new 'mtextattribute) (= :vlax-true (vla-get-mtextattribute new)))
+                                                LM:burst:matt2mtext 
+                                                LM:burst:att2text
+                                            )
+                                            (entget (vlax-vla-object->ename new))
+                                        )
+                                    )
+                                    (vla-delete new)
+                                )
+                                (if nst (LM:burstobject new nst))
+                            )
                         )
                     )
                 )
