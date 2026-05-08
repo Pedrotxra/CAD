@@ -1,8 +1,8 @@
 ;| Definições do arquivo 'Main'
-(SETQ *autotsFolder* nil) ; Caminho da pasta Autots
-(SETQ *preset* nil) ; Nome do preset padrão, ou 'T' para deduzir do arquivo atual
-(SETQ *sharedFolders* nil) ; 'T' para usar as pastas compartilhadas da Autots, ou 'nil' para manter as pastas padrões locais
-(SETQ *automaticCADConfig* nil) ; 'T' para automaticamente configurar as variáveis de sistema do CAD
+(SETQ *autotsFolder* (STRCAT (GETENV "USERPROFILE") "\\OneDrive\\Autots\\")) ; Caminho da pasta Autots
+(SETQ *preset* T) ; Nome do preset padrão, ou 'T' para deduzir do arquivo atual
+(SETQ *sharedFolders* T) ; 'T' para usar as pastas compartilhadas da Autots, ou 'nil' para manter as pastas padrões locais
+(SETQ *automaticCADConfig* T) ; 'T' para automaticamente configurar as variáveis de sistema do CAD
 |;
 
 (SETQ *loginName* (GETVAR "LOGINNAME"))
@@ -60,7 +60,7 @@
           (SETQ *standards* "ATS-Standards.dws")
         (SETQ *toolPaletteFolder* (LIST (QUOTE *auxiliaryFolder*) "Tool Palette\\"))
       (SETQ *scriptsLogFolder* (LIST (QUOTE *CADFolder*) "Logs\\"))
-        (SETQ *scriptsLog* (STRCAT *loginName* ".log"))
+        (SETQ *scriptsLog* (LIST (QUOTE *loginName*) ".log"))
 
 (SETQ *projectTypes* (LIST ;; Em ordem de prioridade. Exemplo: em uma folha com desenhos 'ARQ' e 'LUM', o tipo 'ARQ' prevalece
                        (CONS "ARQUITETÔNICO" "ARQ")

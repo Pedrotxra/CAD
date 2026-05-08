@@ -242,7 +242,7 @@
    |;
 (DEFUN C:LOG ()
   (ATS:WriteLog "LOG" nil)
-  (STARTAPP "NOTEPAD" (STRCAT (ATS:EvaluateStringSymbolList *scriptsLogFolder*) *scriptsLog*))
+  (STARTAPP "NOTEPAD" (ATS:EvaluateStringSymbolList (APPEND *scriptsLogFolder* *scriptsLog*)))
 )
 
 ;| Abre a pasta de logs de comandos

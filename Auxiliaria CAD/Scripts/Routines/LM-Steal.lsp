@@ -562,7 +562,7 @@
                               (vla-getextensiondictionary (vla-get-layers dbdoc))
                           )
                     acdata
-                    (list
+                    (VL-REMOVE nil (list
                         (list "Blocks"                  (steal:getprop acdoc 'blocks)                (steal:getprop dbdoc 'blocks))
                         (list "Layers"                  (Steal:getprop acdoc 'layers)                (steal:getprop dbdoc 'layers))
                         (list "Linetypes"               (steal:getprop acdoc 'linetypes)             (steal:getprop dbdoc 'linetypes))
@@ -570,7 +570,9 @@
                         (list "Dimension Styles"        (steal:getprop acdoc 'dimstyles)             (steal:getprop dbdoc 'dimstyles))
                         (list "Layouts"                 (steal:getprop acdoc 'layouts)               (steal:getprop dbdoc 'layouts))
                         (list "Views"                   (steal:getprop acdoc 'views)                 (steal:getprop dbdoc 'views))
-                       ;(list "Materials"               (steal:getprop acdoc 'materials)             (steal:getprop dbdoc 'materials))
+                        (IF (NOT (EQ *CADSoftware* "ZWCAD"))
+                          (list "Materials"               (steal:getprop acdoc 'materials)             (steal:getprop dbdoc 'materials))
+                        )
                         (list "Viewports"               (steal:getprop acdoc 'viewports)             (steal:getprop dbdoc 'viewports))
                         (list "Page Setups"             (steal:getprop acdoc 'plotconfigurations)    (steal:getprop dbdoc 'plotconfigurations))
                         (list "User Coordinate Systems" (steal:getprop acdoc 'usercoordinatesystems) (steal:getprop dbdoc 'usercoordinatesystems))
@@ -582,7 +584,7 @@
                         (list "Table Styles"            (steal:getitem acdic "ACAD_TABLESTYLE"  )    (steal:getitem dbdic "ACAD_TABLESTYLE"  ))
                         (list "Scales"                  (steal:getitem acdic "ACAD_SCALELIST"   )    (steal:getitem dbdic "ACAD_SCALELIST"   ))
                         (list "Layer States"            (steal:getitem acext "ACAD_LAYERSTATES" )    (steal:getitem dbext "ACAD_LAYERSTATES" ))
-                    )
+                    ))
                     dbdata (vl-remove 'nil (mapcar '(lambda ( x ) (apply 'steal:getdata x)) acdata))
                 )
             )

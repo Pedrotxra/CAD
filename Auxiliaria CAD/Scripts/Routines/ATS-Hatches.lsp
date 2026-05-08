@@ -280,7 +280,7 @@
 ;| Abre uma lista de padrões e cria a hachura a partir de pontos selecionados, ou cria a hachura a partir de um contorno selecionado, ou edita uma hachura selecionada
    @returns nil
    |;
-(DEFUN C:HH (/ *error* commandName hatchProperties)
+(DEFUN C:HH (/ *error* commandName hatchProperties hatchSelection)
   (SETQ commandName "HH")
   ;; Verifica se o padrão de hachura armazenado está na lista de hachuras, pois pode variar na troca de preset
   (SETQ hatchProperties (MAPCAR (FUNCTION CAR) *hatchesList*))
@@ -301,10 +301,40 @@
       )
       (SETQ *hatchPattern* hatchProperties)
       (SETQ hatchProperties (EVAL (CDR (ASSOC *hatchPattern* *hatchesList*))))
-      (IF (AND *currentSelection* (SETQ *currentSelection* (ATS:FilterSelection nil nil *currentSelection* (LIST (CONS 0 "HATCH")))))
-        (ATS:EditHatch *currentSelection* hatchProperties)
+      (IF *currentSelection*
+        (SETQ hatchSelection (ATS:FilterSelection nil nil *currentSelection* (LIST (CONS 0 "HATCH"))))
+      )
+      (IF hatchSelection
+        (ATS:EditHatch hatchSelection hatchProperties)
         (ATS:MakeHatch *currentSelection* hatchProperties)
       )
+      (ATS:RestoreUsersPreferences commandName nil)
+    )
+  )
+)
+
+;| Limpa as hachuras de um bloco
+   @returns [nil] - Limpa as hachuras do bloco
+   |;
+(DEFUN C:LHH (/ *error* commandName selection deleteHatch count)
+  (SETQ commandName "LHH")
+  (COND
+    ((NOT (SETQ selection (SSGET (LIST (CONS 0 "INSERT"))))) (PROMPT "\nNenhum bloco foi selecionado.\n"))
+    (T
+      (ATS:SaveUsersPreferences 12)
+      (DEFUN *error* (errorMessage)
+        (ATS:RestoreUsersPreferences commandName errorMessage)
+      )
+      ;; Exclui hachuras dentro dos blocos de arquitetura
+      (SETQ deleteHatch (LAMBDA (hatch / backgroundColor)
+                          (IF (EQ (VLA-GET-ObjectName hatch) "AcDbHatch")
+                            (VLA-DELETE hatch))))
+      (SETQ count (SSLENGTH selection))
+      (REPEAT count
+        (SETQ count (1- count))
+        (ATS:ApplyToAllNestedItems (ATS:GetEffectiveName (ATS:SaveObject (SSNAME selection count))) deleteHatch)
+      )
+      (COMMAND "_.REGENALL")
       (ATS:RestoreUsersPreferences commandName nil)
     )
   )

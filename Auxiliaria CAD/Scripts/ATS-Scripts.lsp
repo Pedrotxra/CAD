@@ -11,17 +11,19 @@
 (SETQ *sharedFolders* T) ; 'T' para usar as pastas compartilhadas da Autots, ou 'nil' para manter as pastas padrões locais
 (SETQ *automaticCADConfig* T) ; 'T' para automaticamente configurar as variáveis de sistema do CAD
 
+;; Define variáveis globais
+(SETQ *CADSoftware* (GETVAR "PRODUCT"))
+(SETQ *CADLanguage* (IF (EQ *CADSoftware* "AutoCAD")
+                      (VL-REGISTRY-READ (STRCAT "HKEY_LOCAL_MACHINE\\" (VLAX-PRODUCT-KEY)) "Language")))
+(SETQ *acadObject* (VLAX-GET-ACAD-OBJECT))
+(SETQ *activeDocument* (VLA-GET-ACTIVEDOCUMENT *acadObject*))
+
 ;| Carrega as automações Autots
    @global
    @param preset [str/bool] - Nome do preset a ser carregado, ou 'T' para deduzir do arquivo atual, ou 'nil' para carregar nenhum preset
    @returns [nil] - Carrega as automações
    |;
 (DEFUN ATS:LoadScripts (preset / routinesFolder presetPath)
-  ;; Define variáveis globais
-  (SETQ *CADSoftware* (GETVAR "PRODUCT"))
-  (SETQ *CADLanguage* (IF (EQ *CADSoftware* "AutoCAD") (VL-REGISTRY-READ (STRCAT "HKEY_LOCAL_MACHINE\\" (VLAX-PRODUCT-KEY)) "Language")))
-  (SETQ *acadObject* (VLAX-GET-ACAD-OBJECT))
-  (SETQ *activeDocument* (VLA-GET-ACTIVEDOCUMENT *acadObject*))
   ;; Carrega o preset Autots
   (SETQ presetPath (ATS:EvaluateStringSymbolList *presetsFolder*))
   (IF (AND *firstStart* (VL-CATCH-ALL-ERROR-P (VL-CATCH-ALL-APPLY (FUNCTION LOAD) (LIST (STRCAT presetPath "Autots.lsp")))))
@@ -98,7 +100,7 @@
           (PROGN
             (IF (NOT (AND ;; Se o preset estiver definido como automático, procura, no nome do arquivo, o nome de algum preset
                        (EQ *preset* T)
-                       (SETQ *preset* (VL-LIST->STRING (VL-REMOVE 32 (VL-STRING->LIST (GETVAR "DWGPREFIX"))))) ; Remove os espaços
+                       (SETQ *preset* (GETVAR "DWGPREFIX"))
                        (SETQ *preset* (VL-SOME (FUNCTION (LAMBDA (preset)
                                                            (IF (WCMATCH *preset* (STRCAT "*" preset "*"))
                                                              preset)))
@@ -119,7 +121,7 @@
             ;; Carrega as rotinas e o preset padrão
             (ATS:LoadScripts *preset*)
             ;; Cria o arquivo de log
-            (SETQ logName (STRCAT (ATS:EvaluateStringSymbolList *scriptsLogFolder*) *scriptsLog*))
+            (SETQ logName (ATS:EvaluateStringSymbolList (APPEND *scriptsLogFolder* *scriptsLog*)))
             (IF (NOT (FINDFILE logName))
               (PROGN
                 (SETQ logName (OPEN logName "W"))

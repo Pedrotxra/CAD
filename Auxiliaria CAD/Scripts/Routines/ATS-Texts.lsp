@@ -564,7 +564,7 @@
    @returns [nil] - Registra a entrada no log
    |;
 (DEFUN ATS:WriteLog (commandName errorMessage / currentDateAndTime dwgFile scriptsLogFile)
-  (SETQ scriptsLogFile (OPEN (STRCAT (ATS:EvaluateStringSymbolList *scriptsLogFolder*) *scriptsLog*) "A"))
+  (SETQ scriptsLogFile (OPEN (ATS:EvaluateStringSymbolList (APPEND *scriptsLogFolder* *scriptsLog*)) "A"))
   (WRITE-LINE (STRCAT (VL-STRING-SUBST "|" " " (ATS:WriteCurrentDate T T)) "|" *preset* "|" (GETVAR "DWGPREFIX") "|" (GETVAR "DWGNAME") "|" commandName "|" (COND (errorMessage) (""))) scriptsLogFile)
   (CLOSE scriptsLogFile)
 )

@@ -10,7 +10,8 @@
   (IF (AND (VLAX-METHOD-APPLICABLE-P blockObject "GetDynamicBlockProperties")
            ;; Obtém todas as propriedades em forma de objetos
            (SETQ blockProperties (VLAX-INVOKE-METHOD blockObject "GetDynamicBlockProperties"))
-           (SETQ blockProperties (VLAX-SAFEARRAY->LIST (VLAX-VARIANT-VALUE blockProperties))))
+           (SETQ blockProperties (VLAX-VARIANT-VALUE blockProperties))
+           (SETQ blockProperties (VLAX-SAFEARRAY->LIST blockProperties)))
     (PROGN
       (IF (EQ (TYPE searchNames) (READ "STR"))
         (PROGN
