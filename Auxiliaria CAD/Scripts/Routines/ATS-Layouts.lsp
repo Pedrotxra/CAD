@@ -629,7 +629,6 @@
         (SETQ sheetEntityName (SSNAME selection count))
         (ATS:PlotSheet *standardPlotter* *standardPlotStyle* savePath sheetEntityName)
       )
-      (ATS:ClearBoundaries)
       (ATS:RestoreUsersPreferences commandName nil)
     )
   )

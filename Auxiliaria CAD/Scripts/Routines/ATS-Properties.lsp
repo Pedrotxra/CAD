@@ -21,6 +21,7 @@
    @returns [nil] - Restaura as preferências salvas do usuário
    |;
 (DEFUN ATS:ResetPreferencesVariables ()
+  (COMMAND ^C^C)
   (IF *currentView*
     (PROGN
       (IF (AND (EQ (GETVAR "BLOCKEDITOR") 0) (MEMBER *currentTab* (CONS "Model" (LAYOUTLIST))))
@@ -79,7 +80,6 @@
   (SETVAR "CMDECHO" 0)
   (SETVAR "NOMUTT" 1)
   (SETQ *currentSelection* (SSGET "_I"))
-  (SSSETFIRST nil nil)
   (ATS:ResetPreferencesVariables)
   ;; Define um ponto de retorno
   (IF *fullyUndo*
@@ -144,6 +144,7 @@
     )
   )
   (SETQ *objectsToReleaseList* nil)
+  (ATS:ClearBoundaries)
   (IF commandName
     (ATS:WriteLog commandName errorMessage)
   )
@@ -271,8 +272,8 @@
             ;; Trata bloco de título para ajustar o conteúdo da escala
             (IF (EQ (ATS:GetEffectiveName (ATS:SaveObject entityName)) (ATS:GetPropertiesValues "Name" *titleBlockList*))
               (PROGN
-                (SETQ object (ATS:SearchAttribute nil entityName (LIST (CONS 2 (ATS:GetPropertiesValues "ScaleAttributeName" *titleBlockList*)))))
-                (ATS:ChangePropertiesValues object (LIST (CONS 1 (STRCAT (COND ((ATS:GetSubstring "" ":" (ATS:GetPropertiesValues 1 object))) ("ESCALA 1")) ":" (ATS:GetSubstring ":" "" scaleFactor)))))
+                (SETQ object (ATS:GetPropertiesValues "AdjustTitle" *titleBlockList*))
+                (APPLY (FUNCTION dynamicBlockPropertiesList) (LIST entityName))
               )
             )
             ;; Obtém as escalas anotativas
@@ -313,8 +314,8 @@
                   (SETQ object (ATS:SaveObject entityName))
                   ;; Trata bloco de título para ajustar o conteúdo da escala
                   (IF (OR (AND (EQ (ATS:GetEffectiveName object) (ATS:EvaluateStringSymbolList (ATS:GetPropertiesValues "Name" *titleBlockList*)))
-                              (SETQ dynamicBlockPropertiesList (ATS:SearchAttribute nil entityName (LIST (CONS 2 (ATS:GetPropertiesValues "ScaleAttributeName" *titleBlockList*)))))
-                              (ATS:ChangePropertiesValues dynamicBlockPropertiesList (LIST (CONS 1 (STRCAT (COND ((ATS:GetSubstring "" ":" (ATS:GetPropertiesValues 1 dynamicBlockPropertiesList))) ("ESCALA 1")) ":" (RTOS (* scaleFactor *paperUnitsFactor*)))))))
+                               (SETQ dynamicBlockPropertiesList (ATS:GetPropertiesValues "AdjustTitle" *titleBlockList*))
+                               (APPLY (FUNCTION dynamicBlockPropertiesList) (LIST entityName)))
                           (EQ (ATS:GetEffectiveName object) (ATS:EvaluateStringSymbolList (ATS:GetPropertiesValues "Name" *breakLineBlockList*)))
                           (WCMATCH (ATS:GetPropertiesValues 8 entityName) (ATS:ListToString "," (MAPCAR (FUNCTION ATS:EvaluateStringSymbolList) (VL-REMOVE nil (LIST *symbolPen1* *symbolPen2* *symbolPen3* *symbolPen4* *symbolPen5* *symbolPen6*))))))
                     (PROGN
@@ -817,34 +818,38 @@
       (ATS:RestoreUsersPreferences commandName nil)
     )
     (T
-      (ATS:SaveUsersPreferences 8)
+      (ATS:SaveUsersPreferences 24)
       (DEFUN *error* (errorMessage)
         (ATS:RestoreUsersPreferences commandName errorMessage)
       )
-      ;; Permite a explosão de blocos
-      (ATS:AllowExplosion nil)
-      (DEFUN FixSpace (/ selection)
-        (COMMAND-S "_.CHANGE" "_ALL" "" "_PROPERTIES" "_COLOR" "BYLAYER" "_ELEV" "0" "_LTYPE" "BYLAYER" "_LTSCALE" "1" "_LWEIGHT" "BYLAYER" "_THICKNESS" "0" "_MATERIAL" "ByLayer" "")
-        (IF (SETQ selection (SSGET "_A" (LIST (CONS 0 "*TEXT,ATTDEF") (CONS 410 (GETVAR "CTAB")))))
+      (ATS:ApplyToAllNestedItems nil (LAMBDA (item)
+                                       (FOREACH property-value (LIST (CONS "Color" 256)
+                                                                     (CONS "Elevation" 0.0)
+                                                                     (CONS "Linetype" "ByLayer")
+                                                                     (CONS "LinetypeScale" 1)
+                                                                     (CONS "Lineweight" -1)
+                                                                     (CONS "Thickness" 0.0)
+                                                                     (CONS "Material" "ByLayer"))
+                                         (IF (VLAX-PROPERTY-AVAILABLE-P item (CAR property-value))
+                                           (VLAX-PUT-PROPERTY item (CAR property-value) (CDR property-value))))))
+      ;; Itera todos os layouts
+      (FOREACH layout (CONS "Model" (LAYOUTLIST))
+        (COMMAND-S "_.-LAYOUT" "_SET" layout)
+        (COMMAND "_.CHANGE" "_ALL" "" "_PROPERTIES" "_COLOR" "BYLAYER" "_ELEV" "0" "_LTYPE" "BYLAYER" "_LTSCALE" "1" "_LWEIGHT" "BYLAYER" "_THICKNESS" "0")
+        (IF (NOT (EQ *CADSoftware* "ZWCAD"))
+          (COMMAND "_MATERIAL" "ByLayer")
+        )
+        (COMMAND "")
+        (IF (AND (TBLOBJNAME "STYLE" *standardTextStyle*) (SETQ selection (SSGET "_A" (LIST (CONS 0 "*TEXT,ATTDEF") (CONS 410 (GETVAR "CTAB"))))))
           (ATS:ChangeSelectionProperties selection (LIST (CONS 7 *standardTextStyle*)))
         )
-        (IF (SETQ selection (SSGET "_A" (LIST (CONS 0 "*DIMENSION") (CONS 410 (GETVAR "CTAB")))))
+        (IF (AND (TBLOBJNAME "DIMSTYLE" *standardDimensionStyle*) (SETQ selection (SSGET "_A" (LIST (CONS 0 "*DIMENSION") (CONS 410 (GETVAR "CTAB"))))))
           (ATS:ChangeSelectionProperties selection (LIST (CONS 3 *standardDimensionStyle*)))
         )
       )
-      ;; Itera sobre todos os layouts
-      (FOREACH layout (CONS "Model" (LAYOUTLIST))
-        (COMMAND-S "_.-LAYOUT" "_SET" layout)
-        (FixSpace)
-      )
-      (FOREACH block (VL-REMOVE-IF (FUNCTION (LAMBDA (blockName) (WCMATCH blockName "`**"))) (ATS:GetTableProperties nil "BLOCK" 2 nil))
-        (COMMAND-S "_.-BEDIT" block)
-        (FixSpace)
-        (COMMAND-S "_.BSAVE")
-        (COMMAND-S "_.BCLOSE")
-      )
       ;; Sincroniza atributos em todos os blocos
       (COMMAND-S "_.ATTSYNC" "_NAME" "*")
+      (COMMAND-S "_.REGENALL")
       (ATS:RestoreUsersPreferences commandName nil)
     )
   )

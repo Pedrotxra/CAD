@@ -23,6 +23,20 @@
   )
 )
 
+;| Aplica uma função a uma seleção
+   @global
+   @param selection [ss] - Seleção
+   @param applyFunction [subr] - Função
+   @returns [any] - Resultado da última iteração da função
+   |;
+(DEFUN ATS:ApplyToSelection (selection applyFunction / count)
+  (SETQ count (SSLENGTH selection))
+  (REPEAT count
+    (SETQ count (1- count))
+    (APPLY (FUNCTION applyFunction) (LIST (SSNAME selection count)))
+  )
+)
+
 ;| Obtém as propriedades das entidades de uma seleção
    @global
    @param indexesList [int/lst] - Índice ou lista de índices das propriedades, ou 'nil' para obter todas as propriedades

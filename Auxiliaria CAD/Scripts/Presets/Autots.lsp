@@ -247,6 +247,7 @@
 (SETQ *standardDimensionStyle* "Standard")
 (SETQ *standardLeaderStyle* "Standard")
 (SETQ *levelLeaderStyle* "Nível")
+(SETQ *tagLeaderStyle* "Identificação")
 (SETQ *standardLeaderLayer* (QUOTE *symbolPen1*))
 (SETQ *standardTableStyle* "Standard")
 (SETQ *revisionTableStyle* "Revisões")
@@ -594,7 +595,13 @@
                          (CONS "TitleAttributeName" "TÍTULO")
                          (CONS "SubtitleAttributeName" "SUBTÍTULO")
                          (CONS "ScaleAttributeName" "ESCALA")
-                         (CONS "NotesAttributeName" "NOTAS")))
+                         (CONS "NotesAttributeName" "NOTAS")
+                         (CONS "AdjustTitle" (LAMBDA (entityName / attribute)
+                                               ;; Ajusta o texto da escala
+                                               (SETQ attribute (ATS:SearchAttribute nil entityName (LIST (CONS 2 (ATS:GetPropertiesValues "ScaleAttributeName" *titleBlockList*)))))
+                                               (ATS:ChangePropertiesValues attribute (LIST (CONS 1 (STRCAT (COND ((ATS:GetSubstring "" ":" (ATS:GetPropertiesValues 1 attribute))) ("ESCALA 1")) ":" (IF (EQ (TYPE *scaleFactor*) (READ "STR"))
+                                                                                                                                                                                                       (ATS:GetSubstring ":" "" (COND (scaleFactor) (RTOS (* (ATS:GetDynamicBlockProperties nil nil (ATS:SaveObject entityName) "XScaleFactor") *paperUnitsFactor*))))
+                                                                                                                                                                                                       (RTOS (* (COND (scaleFactor) ((ATS:GetPropertiesValues 41 entityName))) *paperUnitsFactor*)))))))))))
 
 (SETQ *roomBlockList* (LIST
                         (CONS "Name" (STRCAT *standardPrefix* *affixSeparator* "Ambiente"))

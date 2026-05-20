@@ -313,30 +313,41 @@
 
 ;| Aplica uma função em todos os níveis de um bloco
    @global
-   @param blockName [str] - Nome do bloco
+   @param blockName [str] - Nome do bloco, ou 'nil' para aplicar a todos
    @param applyFunction [subr] - Função
    @returns [any] - Função aplicada
    |;
 (DEFUN ATS:ApplyToAllNestedItems (blockName applyFunction / ApplyToAllNestedItems blocksCollection blocksList)
-  (DEFUN ApplyToAllNestedItems (blockName)
-    (VLAX-FOR item (ATS:SaveObject (VLA-ITEM blocksCollection blockName))
-      (ATS:SaveObject item)
-      (IF (EQ (VLA-GET-ObjectName item) "AcDbBlockReference")
-        (PROGN
-          (SETQ blockName (VLAX-GET-PROPERTY item "EffectiveName"))
-          (IF (NOT (MEMBER blockName blocksList))
+  (SETQ blocksCollection (ATS:SaveObject (VLA-GET-BLOCKS *activeDocument*)))
+  (IF blockName
+    (PROGN
+      (DEFUN ApplyToAllNestedItems (blockName)
+        (VLAX-FOR item (ATS:SaveObject (VLA-ITEM blocksCollection blockName))
+          (ATS:SaveObject item)
+          (IF (EQ (VLA-GET-ObjectName item) "AcDbBlockReference")
             (PROGN
-              (ApplyToAllNestedItems blockName)
-              (SETQ blocksList (CONS blockName blocksList))
+              (SETQ blockName (VLAX-GET-PROPERTY item "EffectiveName"))
+              (IF (NOT (MEMBER blockName blocksList))
+                (PROGN
+                  (ApplyToAllNestedItems blockName)
+                  (SETQ blocksList (CONS blockName blocksList))
+                )
+              )
             )
           )
+          (APPLY (FUNCTION applyFunction) (LIST item))
         )
       )
-      (APPLY (FUNCTION applyFunction) (LIST item))
+      (ApplyToAllNestedItems blockName)
+    )
+    (VLAX-FOR block blocksCollection
+      (ATS:SaveObject block)
+      (VLAX-FOR item block
+        (ATS:SaveObject item)
+        (APPLY (FUNCTION applyFunction) (LIST item))
+      )
     )
   )
-  (SETQ blocksCollection (ATS:SaveObject (VLA-GET-BLOCKS *activeDocument*)))
-  (ApplyToAllNestedItems blockName)
 )
 
 ;| Cria um bloco com nome aleatório
@@ -625,6 +636,25 @@
         (ATS:RestoreUsersPreferences commandName errorMessage)
       )
       (ATS:ConvertExplodedLevelSymbols referenceSelection circleSelection)
+      (ATS:RestoreUsersPreferences commandName nil)
+    )
+  )
+)
+
+;| Ajusta os blocos de títulos
+   @returns nil
+   |;
+(DEFUN C:ATTTIT (/ *error* commandName selection method count entityName)
+  (SETQ commandName "ATTTIT")
+  (COND
+    ((NOT (AND (SETQ selection (SSGET (LIST (CONS 0 "INSERT"))))
+               (SETQ selection (ATS:FilterSelection nil T selection (LIST (CONS 2 (ATS:GetPropertiesValues "Name" *titleBlockList*))))))) (PROMPT "\nNenhum bloco de título foi selecionado.\n"))
+    (T
+      (ATS:SaveUsersPreferences 9)
+      (DEFUN *error* (errorMessage)
+        (ATS:RestoreUsersPreferences commandName errorMessage)
+      )
+      (ATS:ApplyToSelection selection (ATS:GetPropertiesValues "AdjustTitle" *titleBlockList*))
       (ATS:RestoreUsersPreferences commandName nil)
     )
   )
