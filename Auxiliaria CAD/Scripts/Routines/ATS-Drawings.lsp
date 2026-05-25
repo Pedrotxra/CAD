@@ -331,7 +331,7 @@
                     (IF (SETQ BlockForSection (ATS:FindBlockProperty "BlockForSection" (ATS:TrimSuffix blockName)))
                       (APPLY (FUNCTION BlockForSection) nil)
                     )
-                    (COMMAND-S "_.ATTSYNC" "_NAME" (ATS:GetPropertiesValues 2 entity))
+                    (COMMAND-S "_.ATTSYNC" "_NAME" (ATS:GetEffectiveName blockObject))
                   )
                   ;; Deleta o bloco, caso não tenha versão em vista
                   (ENTDEL entity)

@@ -21,7 +21,6 @@
    @returns [nil] - Restaura as preferências salvas do usuário
    |;
 (DEFUN ATS:ResetPreferencesVariables ()
-  (COMMAND ^C^C)
   (IF *currentView*
     (PROGN
       (IF (AND (EQ (GETVAR "BLOCKEDITOR") 0) (MEMBER *currentTab* (CONS "Model" (LAYOUTLIST))))

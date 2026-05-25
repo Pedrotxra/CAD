@@ -11,6 +11,7 @@
            ;; Obtém todas as propriedades em forma de objetos
            (SETQ blockProperties (VLAX-INVOKE-METHOD blockObject "GetDynamicBlockProperties"))
            (SETQ blockProperties (VLAX-VARIANT-VALUE blockProperties))
+           (>= (VLAX-SAFEARRAY-GET-U-BOUND blockProperties 1) 0)
            (SETQ blockProperties (VLAX-SAFEARRAY->LIST blockProperties)))
     (PROGN
       (IF (EQ (TYPE searchNames) (READ "STR"))
@@ -85,7 +86,9 @@
   (IF (AND (VLAX-METHOD-APPLICABLE-P blockObject "GetDynamicBlockProperties")
            ;; Obtém todas as propriedades em forma de objetos
            (SETQ blockProperties (VLAX-INVOKE-METHOD blockObject "GetDynamicBlockProperties"))
-           (SETQ blockProperties (VLAX-SAFEARRAY->LIST (VLAX-VARIANT-VALUE blockProperties))))
+           (SETQ blockProperties (VLAX-VARIANT-VALUE blockProperties))
+           (>= (VLAX-SAFEARRAY-GET-U-BOUND blockProperties 1) 0)
+           (SETQ blockProperties (VLAX-SAFEARRAY->LIST blockProperties)))
     (PROGN
       (SETQ entityName (VLAX-VLA-OBJECT->ENAME blockObject))
       ;; Salva o ponto base, caso ele seja movido no processo
