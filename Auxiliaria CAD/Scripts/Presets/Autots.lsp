@@ -1,3 +1,6 @@
+;; Acesse a lista de comandos personalizados no link abaixo:
+;; https://autots.notion.site/2807c1e5a57446d1b574376ae7891959?v=87b44155e8974263a78b36b458c53dcf&source=copy_link
+
 ;| Definições do arquivo 'Main'
 (SETQ *autotsFolder* (STRCAT (GETENV "USERPROFILE") "\\OneDrive\\Autots\\")) ; Caminho da pasta Autots
 (SETQ *preset* T) ; Nome do preset padrão, ou 'T' para deduzir do arquivo atual
@@ -197,7 +200,8 @@
 (SETQ *wallFinishesLayer*     (QUOTE *pen1*))
 (SETQ *handrailLayer*         (LIST (QUOTE *standardPrefix*) (QUOTE *affixSeparator*) "Corrimão"))
 (SETQ *falseCeilingLayer*     (LIST (QUOTE *standardPrefix*) (QUOTE *affixSeparator*) "Forro"))
-(SETQ *structuralLayer*       (QUOTE *pen6*))
+(SETQ *architectureLayer*     (LIST (QUOTE *standardPrefix*) (QUOTE *affixSeparator*) "Arquitetura"))
+(SETQ *structureLayer*        (LIST (QUOTE *standardPrefix*) (QUOTE *affixSeparator*) "Estrutura"))
 (SETQ *lightingLayer*         (LIST (QUOTE *standardPrefix*) (QUOTE *affixSeparator*) "Luminotécnico"))
 (SETQ *fireLayer*             (LIST (QUOTE *standardPrefix*) (QUOTE *affixSeparator*) "Incêndio"))
 (SETQ *layoutLayer*           (LIST (QUOTE *standardPrefix*) (QUOTE *affixSeparator*) "Layout"))
@@ -218,7 +222,7 @@
       (QUOTE *axisLayer*) (QUOTE *dimensionLayer*) (QUOTE *symbolPen6*) (QUOTE *symbolPen5*) (QUOTE *symbolPen4*) (QUOTE *symbolPen3*) (QUOTE *symbolPen2*) (QUOTE *symbolPen1*)
     )
     (LIST ; Layers de desenho
-      (QUOTE *projectionLayer*) (QUOTE *structuralLayer*) (QUOTE *constructionLayer*) (QUOTE *demolitionLayer*)
+      (QUOTE *projectionLayer*) (QUOTE *structureLayer*) (QUOTE *constructionLayer*) (QUOTE *demolitionLayer*)
       (QUOTE *pen6*) (QUOTE *pen5*) (QUOTE *pen4*) (QUOTE *pen3*) (QUOTE *pen2*) (QUOTE *pen1*) (QUOTE *handrailLayer*) (QUOTE *siteLayer*) (QUOTE *layoutLayer*) (QUOTE *vegetationLayer*) (QUOTE *trafficLayer*)
       (QUOTE *fireLayer*) (QUOTE *lightingLayer*) (QUOTE *electricalLayer*) (QUOTE *plumbingLayer*) (QUOTE *falseCeilingLayer*)
       (QUOTE *hatchLayer*) (QUOTE *solidLayer*) (QUOTE *wipeoutLayer*)

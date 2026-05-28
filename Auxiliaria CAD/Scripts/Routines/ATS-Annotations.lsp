@@ -22,6 +22,33 @@
   (COMMAND-S "_.DIMALIGNED")
 )
 
+;| Limpa as cotas de um bloco
+   @returns [nil] - Limpa as hachuras do bloco
+   |;
+(DEFUN C:LCT (/ *error* commandName selection deleteDimension count)
+  (SETQ commandName "LCT")
+  (COND
+    ((NOT (SETQ selection (SSGET (LIST (CONS 0 "INSERT"))))) (PROMPT "\nNenhum bloco foi selecionado.\n"))
+    (T
+      (ATS:SaveUsersPreferences 12)
+      (DEFUN *error* (errorMessage)
+        (ATS:RestoreUsersPreferences commandName errorMessage)
+      )
+      ;; Exclui cotas dentro dos blocos de arquitetura
+      (SETQ deleteDimension (LAMBDA (dimension / backgroundColor)
+                          (IF (WCMATCH (VLA-GET-ObjectName dimension) "AcDbRotatedDimension,AcDbAlignedDimension,AcDb2LineAngularDimension,AcDbArcDimension,AcDbRadialDimension,AcDbDiametricDimension")
+                            (VLA-DELETE dimension))))
+      (SETQ count (SSLENGTH selection))
+      (REPEAT count
+        (SETQ count (1- count))
+        (ATS:ApplyToAllNestedItems (ATS:GetEffectiveName (ATS:SaveObject (SSNAME selection count))) deleteDimension)
+      )
+      (COMMAND "_.REGENALL")
+      (ATS:RestoreUsersPreferences commandName nil)
+    )
+  )
+)
+
 ;| Insere uma interrupção
    @returns nil
    |;

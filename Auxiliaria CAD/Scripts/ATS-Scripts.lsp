@@ -1,10 +1,10 @@
+(SETVAR "CMDECHO" 0)
+
 ;| Instruções para primeira configuração
    Copie o caminho da pasta Autots e, entre aspas e com barras duplas invertidas '\\' separando as pastas, inclusive no final,
    cole-o na frente de '*autotsFolder', logo abaixo neste arquivo, substituindo o valor anterior
    e, de acordo com suas preferências, configure as próximas 3 variáveis: '*preset*', '*sharedFolders*' e '*automaticCADConfig*'
 |;
-
-(SETVAR "CMDECHO" 0)
 
 (SETQ *autotsFolder* (STRCAT (GETENV "USERPROFILE") "\\OneDrive\\Autots\\")) ; Caminho da pasta Autots
 (SETQ *preset* T) ; Nome do preset padrão, ou 'T' para deduzir do arquivo atual

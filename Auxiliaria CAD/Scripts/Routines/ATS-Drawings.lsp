@@ -343,8 +343,13 @@
           (SETQ sectionBlock (ATS:TrimSelectionSets (SSGET "_F" (LIST bottomLeft bottomRight topRight topLeft) (LIST (CONS 0 "INSERT"))) (SSGET "_W" bottomLeft topRight (LIST (CONS 0 "INSERT")))))
           (IF sectionBlock
             (PROGN
-              (SSSETFIRST nil sectionBlock)
-              (C:BURST)
+              (IF (EQ *CADSoftware* "AutoCAD")
+                (PROGN
+                  (SSSETFIRST nil sectionBlock)
+                  (C:BURST)
+                )
+                (COMMAND-S "BURST" sectionBlock "")
+              )
               (SETQ sectionBlock (SSGET "_A" (LIST (CONS 0 "*TEXT,WIPEOUT") (CONS 410 (GETVAR "CTAB")))))
               (IF sectionBlock
                 (COMMAND-S "_.ERASE" sectionBlock "")

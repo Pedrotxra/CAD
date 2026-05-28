@@ -461,13 +461,23 @@
   )
 )
 
-(IF *structuralLayer*
+(IF *architectureLayer*
+  ;| Muda para a camada de arquitetura
+     @returns nil
+     |;
+  (DEFUN C:ARQ ()
+    (ATS:WriteLog "ARQ" nil)
+    (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *architectureLayer*))
+  )
+)
+
+(IF *structureLayer*
   ;| Muda para a camada de estrutural
      @returns nil
      |;
   (DEFUN C:EST ()
     (ATS:WriteLog "EST" nil)
-    (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *structuralLayer*))
+    (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *structureLayer*))
   )
 )
 
@@ -580,14 +590,21 @@
       (ATS:WriteLog "CORR" nil)
       (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *handrailLayer*))
     )
-    ;| Muda para a camada de corrimão para incêndio e aplica a cor 10
+    ;| Alterna a cor da camada de corrimãos entre 10 e a padrão
       @returns nil
       |;
-    (DEFUN C:CORRINC (/ layerName)
+    (DEFUN C:CORRINC (/ layerName layer standardColor)
       (ATS:WriteLog "CORRINC" nil)
       (SETQ layerName (ATS:EvaluateStringSymbolList *handrailLayer*))
-      (IF (ATS:ChangeLayer layerName)
-        (ATS:ChangePropertiesValues (TBLOBJNAME "LAYER" layerName) (LIST (CONS 62 10)))
+      (IF (SETQ layer (TBLOBJNAME "LAYER" layerName))
+        (IF (EQ (ATS:GetPropertiesValues 62 layer) 10)
+          (PROGN
+            (SETQ standardColor (ATS:InsertLayer (ATS:EvaluateStringSymbolList *architectureLayer*)))
+            (ATS:ChangePropertiesValues layer (LIST (CONS 62 (ATS:GetPropertiesValues 62 (TBLOBJNAME "LAYER" standardColor)))))
+          )
+          (ATS:ChangePropertiesValues layer (LIST (CONS 62 10)))
+        )
+        (PROMPT "\nLayer de corrimãos não encontrado.\n")
       )
     )
   )

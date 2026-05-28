@@ -334,28 +334,6 @@
   )
 )
 
-;| Filtra objetos com o mesmo layer da entidade de referência
-   @returns nil
-   |;
-(DEFUN C:FL (/ *error* commandName selection)
-  (SETQ commandName "FL")
-  (COND
-    ((NOT (SETQ selection (ATS:SelectSingleObject nil))) (PROMPT "\nNenhum objeto foi selecionado.\n"))
-    (T
-      (ATS:SaveUsersPreferences nil)
-      (DEFUN *error* (/ message)
-        (ATS:RestoreUsersPreferences commandName errorMessage)
-      )
-      (SETQ selection (LIST (CONS 8 (ATS:GetPropertiesValues 8 selection))))
-      (PROMPT "\nSelecione os objetos a serem filtrados, ou Enter para selecionar todos.\n")
-      (SETQ selection (COND ((SSGET selection)) ((SSGET "_A" (APPEND selection (LIST (CONS 410 (GETVAR "CTAB"))))))))
-      (ATS:RestoreUsersPreferences commandName nil)
-      (SSSETFIRST nil selection)
-      (PROMPT (STRCAT "\n" (IF selection (ITOA (SSLENGTH selection)) "0") " objetos selecionados.\n"))
-    )
-  )
-)
-
 ;| Filtra objetos com o mesmo padrão de hachura da entidade de referência
    @returns nil
    |;
@@ -374,6 +352,28 @@
       (ATS:RestoreUsersPreferences commandName nil)
       (SSSETFIRST nil selection)
       (PROMPT (STRCAT "\n" (IF selection (ITOA (SSLENGTH selection)) "0") " hachuras selecionadas.\n"))
+    )
+  )
+)
+
+;| Filtra objetos com o mesmo layer da entidade de referência
+   @returns nil
+   |;
+(DEFUN C:FL (/ *error* commandName selection)
+  (SETQ commandName "FL")
+  (COND
+    ((NOT (SETQ selection (ATS:SelectSingleObject nil))) (PROMPT "\nNenhum objeto foi selecionado.\n"))
+    (T
+      (ATS:SaveUsersPreferences nil)
+      (DEFUN *error* (/ message)
+        (ATS:RestoreUsersPreferences commandName errorMessage)
+      )
+      (SETQ selection (LIST (CONS 8 (ATS:GetPropertiesValues 8 selection))))
+      (PROMPT "\nSelecione os objetos a serem filtrados, ou Enter para selecionar todos.\n")
+      (SETQ selection (COND ((SSGET selection)) ((SSGET "_A" (APPEND selection (LIST (CONS 410 (GETVAR "CTAB"))))))))
+      (ATS:RestoreUsersPreferences commandName nil)
+      (SSSETFIRST nil selection)
+      (PROMPT (STRCAT "\n" (IF selection (ITOA (SSLENGTH selection)) "0") " objetos selecionados.\n"))
     )
   )
 )
@@ -402,28 +402,6 @@
   )
 )
 
-;| Filtra objetos de layers com o trecho de referência no nome
-   @returns nil
-   |;
-(DEFUN C:FNL (/ *error* commandName selection)
-  (SETQ commandName "FNL")
-  (COND
-    ((NOT (SETQ selection (PROGN (INITGET 1) (GETSTRING T "\nInsira o trecho a ser contido no nome do layer:\n")))) (PROMPT "\nO trecho não foi introduzido.\n"))
-    (T
-      (ATS:SaveUsersPreferences nil)
-      (DEFUN *error* (/ message)
-        (ATS:RestoreUsersPreferences commandName errorMessage)
-      )
-      (SETQ selection (LIST (CONS 8 (STRCAT "*" selection "*"))))
-      (PROMPT "\nSelecione os objetos a serem filtrados, ou Enter para selecionar todos.\n")
-      (SETQ selection (COND ((SSGET selection)) ((SSGET "_A" (APPEND selection (LIST (CONS 410 (GETVAR "CTAB"))))))))
-      (ATS:RestoreUsersPreferences commandName nil)
-      (SSSETFIRST nil selection)
-      (PROMPT (STRCAT "\n" (IF selection (ITOA (SSLENGTH selection)) "0") " objetos selecionados.\n"))
-    )
-  )
-)
-
 ;| Filtra hachuras com o trecho de referência no nome
    @returns nil
    |;
@@ -442,6 +420,28 @@
       (ATS:RestoreUsersPreferences commandName nil)
       (SSSETFIRST nil selection)
       (PROMPT (STRCAT "\n" (IF selection (ITOA (SSLENGTH selection)) "0") " hachuras selecionadas.\n"))
+    )
+  )
+)
+
+;| Filtra objetos de layers com o trecho de referência no nome
+   @returns nil
+   |;
+(DEFUN C:FNL (/ *error* commandName selection)
+  (SETQ commandName "FNL")
+  (COND
+    ((NOT (SETQ selection (PROGN (INITGET 1) (GETSTRING T "\nInsira o trecho a ser contido no nome do layer:\n")))) (PROMPT "\nO trecho não foi introduzido.\n"))
+    (T
+      (ATS:SaveUsersPreferences nil)
+      (DEFUN *error* (/ message)
+        (ATS:RestoreUsersPreferences commandName errorMessage)
+      )
+      (SETQ selection (LIST (CONS 8 (STRCAT "*" selection "*"))))
+      (PROMPT "\nSelecione os objetos a serem filtrados, ou Enter para selecionar todos.\n")
+      (SETQ selection (COND ((SSGET selection)) ((SSGET "_A" (APPEND selection (LIST (CONS 410 (GETVAR "CTAB"))))))))
+      (ATS:RestoreUsersPreferences commandName nil)
+      (SSSETFIRST nil selection)
+      (PROMPT (STRCAT "\n" (IF selection (ITOA (SSLENGTH selection)) "0") " objetos selecionados.\n"))
     )
   )
 )
