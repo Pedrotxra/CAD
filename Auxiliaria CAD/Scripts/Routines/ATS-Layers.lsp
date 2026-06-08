@@ -1,6 +1,6 @@
-;| Insere a camada
+;| Insere o layer
    @global
-   @param layer [str] - Nome da camada
+   @param layer [str] - Nome do layer
    @returns [str] - Nome do layer, se encontrado
    |;
 (DEFUN ATS:InsertLayer (layer)
@@ -16,10 +16,10 @@
   )
 )
 
-;| Altera a camada atual
+;| Altera o layer atual
    @global
-   @param layer [str] - Nome da camada
-   @returns [str] - Nome da camada, se encontrada
+   @param layer [str] - Nome do layer
+   @returns [str] - Nome do layer, se encontrada
    |;
 (DEFUN ATS:SetCurrentLayer (layer)
   (IF (ATS:InsertLayer layer)
@@ -27,11 +27,11 @@
   )
 )
 
-;| Mescla uma camada em outra
+;| Mescla um layer em outra
    @global
-   @param layersToMerge [str/lst] - Nome da camada ou lista de camadas a serem mescladas
-   @param targetLayer [str] - Nome da camada alvo
-   @returns [nil] - Mescla as camadas
+   @param layersToMerge [str/lst] - Nome do layer ou lista de layers a serem mescladas
+   @param targetLayer [str] - Nome do layer alvo
+   @returns [nil] - Mescla os layers
    |;
 (DEFUN ATS:LayerMerge (layersToMerge targetLayer)
   (COMMAND "_.-LAYMRG")
@@ -44,9 +44,9 @@
   (COMMAND "" "_NAME" targetLayer "_YES")
 )
 
-;| Salva a configuração atual das camadas
+;| Salva a configuração atual dos layers
    @global
-   @returns [lst] - Lista de camadas desligadas, congeladas e travadas, nesta ordem
+   @returns [lst] - Lista de layers desligadas, congeladas e travadas, nesta ordem
    |;
 (DEFUN ATS:SaveDeactivaredLayers (/ offLayers frozenLayers lockedLayers)
   (FOREACH layer (ATS:GetTableProperties nil "LAYER" (LIST 2 62 70) nil)
@@ -63,18 +63,18 @@
   (SETQ *deactivatedLayers* (LIST offLayers frozenLayers lockedLayers))
 )
 
-;| Ativa todos as camadas
+;| Ativa todos os layers
    @global
-   @returns [nil] - Salva a configuração anterior das camadas e as ativa
+   @returns [nil] - Salva a configuração anterior dos layers e as ativa
    |;
 (DEFUN ATS:ActivateLayers ()
   (ATS:SaveDeactivaredLayers)
   (COMMAND-S "_.-LAYER" "_ON" "*" "_THAW" "*" "_UNLOCK" "*" "")
 )
 
-;| Restaura a configuração salva de camadas
+;| Restaura a configuração salva de layers
    @global
-   @returns [nil] - Restaura a configuração salva das camadas
+   @returns [nil] - Restaura a configuração salva dos layers
    |;
 (DEFUN ATS:RestoreLayers (/ offLayers frozenLayers lockedLayers)
   (IF (SETQ offLayers (CAR *deactivatedLayers*))
@@ -115,10 +115,10 @@
   )
 )
 
-;| Altera a camada dos objetos selecionados, ou da camada atual
+;| Altera o layer dos objetos selecionados, ou do layer atual
    @global
-   @param layer [str] - Nome da camada
-   @returns [nil] - Altera a camada dos objetos selecionados ou a camada atual
+   @param layer [str] - Nome do layer
+   @returns [nil] - Altera o layer dos objetos selecionados ou o layer atual
    |;
 (DEFUN ATS:ChangeLayer (layer / selection)
   (IF (SETQ selection (SSGET "_I"))
@@ -132,10 +132,10 @@
   )
 )
 
-;| Trava as camadas
+;| Trava os layers
    @global
-   @param layersList [lst] - Lista de camadas a travar
-   @returns [nil] - Trava as camadas
+   @param layersList [lst] - Lista de layers a travar
+   @returns [nil] - Trava os layers
    |;
 (DEFUN ATS:LockLayers (layersList)
   (IF (MEMBER (GETVAR "CLAYER") layersList)
@@ -144,19 +144,19 @@
   (COMMAND-S "_.-LAYER" "_LOCK" (ATS:ListToString "," layersList) "")
 )
 
-;| Destrava as camadas
+;| Destrava os layers
    @global
-   @param layersList [lst] - Lista de camadas a destravar
-   @returns [nil] - Destrava as camadas
+   @param layersList [lst] - Lista de layers a destravar
+   @returns [nil] - Destrava os layers
    |;
 (DEFUN ATS:UnlockLayers (layersList)
   (COMMAND-S "_.-LAYER" "_UNLOCK" (ATS:ListToString "," layersList) "")
 )
 
-;| Isola as camadas
+;| Isola os layers
    @global
-   @param layersList [lst] - Lista de camadas a isolar
-   @returns [nil] - Isola as camadas
+   @param layersList [lst] - Lista de layers a isolar
+   @returns [nil] - Isola os layers
    |;
 (DEFUN ATS:IsolateLayers (layersList)
   (ATS:SaveDeactivaredLayers)
@@ -166,9 +166,9 @@
   (COMMAND-S "_.-LAYER" "_LOCK" (STRCAT "~" (GETVAR "CLAYER")) "_UNLOCK" (ATS:ListToString "," layersList) "")
 )
 
-;| Define a ordem de visualização dos objetos de acordo com as suas camadas ou nomes particulares de blocos
+;| Define a ordem de visualização dos objetos de acordo com as suos layers ou nomes particulares de blocos
    @global
-   @param layersDrawOrderList [lst] - Lista com nomes das camadas, da mais prioritária à menos, divididas em camadas de anotação e camadas de desenho, ou 'T' para configuração padrão
+   @param layersDrawOrderList [lst] - Lista com nomes dos layers, da mais prioritária à menos, divididas em layers de anotação e layers de desenho, ou 'T' para configuração padrão
    @param blocksDrawOrderList [lst] - Lista com nomes dos blocos, do mais prioritário ao menos, ou 'T' para configuração padrão
    @returns [nil] - Organiza a ordem de visualização dos objetos
    |;
@@ -181,7 +181,7 @@
   (IF (EQ blocksDrawOrderList T)
     (SETQ blocksDrawOrderList (MAPCAR (FUNCTION (LAMBDA (block) (IF (LISTP block) (ATS:GetPropertiesValues "Name" block) block))) (ATS:EvaluateSymbolList *blocksDrawOrderList*)))
   )
-  ;; Traz os elementos das camadas de anotação
+  ;; Traz os elementos dos layers de anotação
   (FOREACH layerName (CAR layersDrawOrderList)
     (IF (SETQ selection (SSGET "_A" (LIST (CONS 8 layerName) (CONS 410 (GETVAR "CTAB")))))
       (COMMAND-S "_.DRAWORDER" selection "" "_BACK")
@@ -194,7 +194,7 @@
       )
     (COMMAND-S "_.DRAWORDER" blocksSelection "" "_BACK")
   )
-  ;; Traz os elementos das camadas restantes
+  ;; Traz os elementos dos layers restantes
   (FOREACH layerName (CADR layersDrawOrderList)
     (SETQ selection (ATS:TrimSelectionSets (SSGET "_A" (LIST (CONS 8 layerName) (CONS 410 (GETVAR "CTAB")))) blocksSelection))
     (IF selection
@@ -204,7 +204,7 @@
   (COMMAND-S "_.REGENALL")
 )
 
-;| Organiza a ordem de visualização das camadas e blocos
+;| Organiza a ordem de visualização dos layers e blocos
    @returns nil
    |;
 (DEFUN C:DRA (/ *error* commandName)
@@ -218,7 +218,7 @@
   (ATS:RestoreUsersPreferences commandName nil)
 )
 
-;| Liga, descongela e destrava todos as camadas e salva a configuração anterior
+;| Liga, descongela e destrava todos os layers e salva a configuração anterior
    @returns nil
    |;
 (DEFUN C:LL ()
@@ -228,7 +228,7 @@
   (SETQ *deactivatedLayers* nil)
 )
 
-;| Restaura a configuração anterior das camadas
+;| Restaura a configuração anterior dos layers
    @returns nil
    |;
 (DEFUN C:RL (/ *deactivatedLayers*)
@@ -239,7 +239,7 @@
   (SETQ *extendedDeactivatedLayers* nil)
 )
 
-;| Trava as camadas principais
+;| Trava os layers principais
    @returns nil
    |;
 (DEFUN C:TL ()
@@ -247,7 +247,7 @@
   (ATS:LockLayers (MAPCAR (FUNCTION ATS:EvaluateStringSymbolList) (VL-REMOVE nil (LIST *pen1* *pen2* *pen3* *pen4* *pen5* *pen6*))))
 )
 
-;| Destrava as camadas principais
+;| Destrava os layers principais
    @returns nil
    |;
 (DEFUN C:DL ()
@@ -255,7 +255,7 @@
   (ATS:UnlockLayers (MAPCAR (FUNCTION ATS:EvaluateStringSymbolList) (VL-REMOVE nil (LIST *pen1* *pen2* *pen3* *pen4* *pen5* *pen6*))))
 )
 
-;| Isola as camadas principais
+;| Isola os layers principais
    @returns nil
    |;
 (DEFUN C:IL ()
@@ -263,7 +263,7 @@
   (ATS:IsolateLayers (MAPCAR (FUNCTION ATS:EvaluateStringSymbolList) (VL-REMOVE nil (LIST *pen1* *pen2* *pen3* *pen4* *pen5* *pen6*))))
 )
 
-;| Trava as camadas de simbologia
+;| Trava os layers de simbologia
    @returns nil
    |;
 (DEFUN C:TS ()
@@ -271,7 +271,7 @@
   (ATS:LockLayers (MAPCAR (FUNCTION ATS:EvaluateStringSymbolList) (VL-REMOVE nil (LIST *symbolPen1* *symbolPen2* *symbolPen3* *symbolPen4* *symbolPen5* *symbolPen6*))))
 )
 
-;| Destrava as camadas de simbologia
+;| Destrava os layers de simbologia
    @returns nil
    |;
 (DEFUN C:DS ()
@@ -279,7 +279,7 @@
   (ATS:UnlockLayers (MAPCAR (FUNCTION ATS:EvaluateStringSymbolList) (VL-REMOVE nil (LIST *symbolPen1* *symbolPen2* *symbolPen3* *symbolPen4* *symbolPen5* *symbolPen6*))))
 )
 
-;| Isola as camadas de simbologia
+;| Isola os layers de simbologia
    @returns nil
    |;
 (DEFUN C:IS ()
@@ -287,7 +287,7 @@
   (ATS:IsolateLayers (MAPCAR (FUNCTION ATS:EvaluateStringSymbolList) (VL-REMOVE nil (LIST *symbolPen1* *symbolPen2* *symbolPen3* *symbolPen4* *symbolPen5* *symbolPen6*))))
 )
 
-;| Travar a camada de cotas
+;| Travar o layer de cotas
    @returns nil
    |;
 (DEFUN C:TC ()
@@ -295,7 +295,7 @@
   (ATS:LockLayers (LIST (ATS:EvaluateStringSymbolList *dimensionLayer*)))
 )
 
-;| Destravar a camada de cotas
+;| Destravar o layer de cotas
    @returns nil
    |;
 (DEFUN C:DC ()
@@ -303,279 +303,307 @@
   (ATS:UnlockLayers (LIST (ATS:EvaluateStringSymbolList *dimensionLayer*)))
 )
 
-;| Muda para a camada "0"
+;| Muda para o layer "0"
    @returns nil
    |;
 (DEFUN C:0 ()
+  (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
   (ATS:WriteLog "0" nil)
   (ATS:ChangeLayer "0")
 )
 
 (IF *pen1*
-  ;| Muda para a camada da pena 1
+  ;| Muda para o layer da pena 1
      @returns nil
      |;
   (DEFUN C:1 ()
+    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
     (ATS:WriteLog "1" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *pen1*))
   )
 )
 
 (IF *pen2*
-  ;| Muda para a camada da pena 2
+  ;| Muda para o layer da pena 2
      @returns nil
      |;
   (DEFUN C:2 ()
+    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
     (ATS:WriteLog "2" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *pen2*))
   )
 )
 
 (IF *pen3*
-  ;| Muda para a camada da pena 3
+  ;| Muda para o layer da pena 3
      @returns nil
      |;
   (DEFUN C:3 ()
+    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
     (ATS:WriteLog "3" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *pen3*))
   )
 )
 
 (IF *pen4*
-  ;| Muda para a camada da pena 4
+  ;| Muda para o layer da pena 4
      @returns nil
      |;
   (DEFUN C:4 ()
+    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
     (ATS:WriteLog "4" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *pen4*))
   )
 )
 
 (IF *pen5*
-  ;| Muda para a camada da pena 5
+  ;| Muda para o layer da pena 5
      @returns nil
      |;
   (DEFUN C:5 ()
+    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
     (ATS:WriteLog "5" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *pen5*))
   )
 )
 
 (IF *pen6*
-  ;| Muda para a camada da pena 6
+  ;| Muda para o layer da pena 6
      @returns nil
      |;
   (DEFUN C:6 ()
+    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
     (ATS:WriteLog "6" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *pen6*))
   )
 )
 
 (IF *symbolPen1*
-  ;| Muda para a camada de simbologia da pena 1
+  ;| Muda para o layer de simbologia da pena 1
      @returns nil
      |;
   (DEFUN C:S1 ()
+    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
     (ATS:WriteLog "S1" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *symbolPen1*))
   )
 )
 
 (IF *symbolPen2*
-  ;| Muda para a camada de simbologia da pena 2
+  ;| Muda para o layer de simbologia da pena 2
      @returns nil
      |;
   (DEFUN C:S2 ()
+    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
     (ATS:WriteLog "S2" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *symbolPen2*))
   )
 )
 
 (IF *symbolPen3*
-  ;| Muda para a camada de simbologia da pena 3
+  ;| Muda para o layer de simbologia da pena 3
      @returns nil
      |;
   (DEFUN C:S3 ()
+    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
     (ATS:WriteLog "S3" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *symbolPen3*))
   )
 )
 
 (IF *symbolPen4*
-  ;| Muda para a camada de simbologia da pena 4
+  ;| Muda para o layer de simbologia da pena 4
      @returns nil
      |;
   (DEFUN C:S4 ()
+    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
     (ATS:WriteLog "S4" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *symbolPen4*))
   )
 )
 
 (IF *symbolPen5*
-  ;| Muda para a camada de simbologia da pena 5
+  ;| Muda para o layer de simbologia da pena 5
      @returns nil
      |;
   (DEFUN C:S5 ()
+    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
     (ATS:WriteLog "S5" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *symbolPen5*))
   )
 )
 
 (IF *symbolPen6*
-  ;| Muda para a camada de simbologia da pena 6
+  ;| Muda para o layer de simbologia da pena 6
      @returns nil
      |;
   (DEFUN C:S6 ()
+    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
     (ATS:WriteLog "S6" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *symbolPen6*))
   )
 )
 
 (IF *projectionLayer*
-  ;| Muda para a camada de projeção
+  ;| Muda para o layer de projeção
      @returns nil
      |;
   (DEFUN C:PROJ ()
+    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
     (ATS:WriteLog "PROJ" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *projectionLayer*))
   )
 )
 
 (IF *areaLayer*
-  ;| Muda para a camada de área
+  ;| Muda para o layer de área
      @returns nil
      |;
   (DEFUN C:AREAS ()
+    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
     (ATS:WriteLog "AREAS" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *areaLayer*))
   )
 )
 
 (IF *falseCeilingLayer*
-  ;| Muda para a camada de forro
+  ;| Muda para o layer de forro
      @returns nil
      |;
   (DEFUN C:FOR ()
+    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
     (ATS:WriteLog "FOR" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *falseCeilingLayer*))
   )
 )
 
 (IF *architectureLayer*
-  ;| Muda para a camada de arquitetura
+  ;| Muda para o layer de arquitetura
      @returns nil
      |;
   (DEFUN C:ARQ ()
+    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
     (ATS:WriteLog "ARQ" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *architectureLayer*))
   )
 )
 
 (IF *structureLayer*
-  ;| Muda para a camada de estrutural
+  ;| Muda para o layer de estrutural
      @returns nil
      |;
   (DEFUN C:EST ()
+    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
     (ATS:WriteLog "EST" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *structureLayer*))
   )
 )
 
 (IF *layoutLayer*
-  ;| Muda para a camada de layout
+  ;| Muda para o layer de layout
      @returns nil
      |;
   (DEFUN C:LAY ()
+    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
     (ATS:WriteLog "LAY" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *layoutLayer*))
   )
 )
 
 (IF *electricalLayer*
-  ;| Muda para a camada de elétrica
+  ;| Muda para o layer de elétrica
      @returns nil
      |;
   (DEFUN C:ELE ()
+    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
     (ATS:WriteLog "ELE" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *electricalLayer*))
   )
 )
 
 (IF *fireLayer*
-  ;| Muda para a camada de incêndio
+  ;| Muda para o layer de incêndio
      @returns nil
      |;
   (DEFUN C:INC ()
+    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
     (ATS:WriteLog "INC" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *fireLayer*))
   )
 )
 
 (IF *plumbingLayer*
-  ;| Muda para a camada de louças
+  ;| Muda para o layer de louças
      @returns nil
      |;
   (DEFUN C:HID ()
+    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
     (ATS:WriteLog "HID" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *plumbingLayer*))
   )
 )
 
 (IF *lightingLayer*
-  ;| Muda para a camada de luminotécnico
+  ;| Muda para o layer de luminotécnico
      @returns nil
      |;
   (DEFUN C:LUM ()
+    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
     (ATS:WriteLog "LUM" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *lightingLayer*))
   )
 )
 
 (IF *trafficLayer*
-  ;| Muda para a camada de tráfego
+  ;| Muda para o layer de tráfego
      @returns nil
      |;
   (DEFUN C:TRA ()
+    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
     (ATS:WriteLog "TRA" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *trafficLayer*))
   )
 )
 
 (IF *vegetationLayer*
-  ;| Muda para a camada de vegetação
+  ;| Muda para o layer de vegetação
      @returns nil
      |;
   (DEFUN C:VEG ()
+    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
     (ATS:WriteLog "VEG" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *vegetationLayer*))
   )
 )
 
 (IF *siteLayer*
-  ;| Muda para a camada de terreno
+  ;| Muda para o layer de terreno
      @returns nil
      |;
   (DEFUN C:TER ()
+    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
     (ATS:WriteLog "TER" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *siteLayer*))
   )
 )
 
 (IF *constructionLayer*
-  ;| Muda para a camada de construção
+  ;| Muda para o layer de construção
      @returns nil
      |;
   (DEFUN C:CONS ()
+    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
     (ATS:WriteLog "CONS" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *constructionLayer*))
   )
 )
 
 (IF *demolitionLayer*
-  ;| Muda para a camada de demolição
+  ;| Muda para o layer de demolição
      @returns nil
      |;
   (DEFUN C:DEM ()
+    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
     (ATS:WriteLog "DEM" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *demolitionLayer*))
   )
@@ -583,14 +611,15 @@
 
 (IF *handrailLayer*
   (PROGN
-    ;| Muda para a camada de corrimão
+    ;| Muda para o layer de corrimão
       @returns nil
       |;
     (DEFUN C:CORR ()
+      (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
       (ATS:WriteLog "CORR" nil)
       (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *handrailLayer*))
     )
-    ;| Alterna a cor da camada de corrimãos entre 10 e a padrão
+    ;| Alterna a cor do layer de corrimãos entre 10 e a padrão
       @returns nil
       |;
     (DEFUN C:CORRINC (/ layerName layer standardColor)
@@ -611,10 +640,11 @@
 )
 
 (IF *draftLayer*
-  ;| Muda para a camada de rascunho
+  ;| Muda para o layer de rascunho
      @returns nil
      |;
   (DEFUN C:RAS ()
+    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
     (ATS:WriteLog "RAS" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *draftLayer*))
   )

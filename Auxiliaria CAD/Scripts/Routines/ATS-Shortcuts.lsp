@@ -133,8 +133,8 @@
 ;| Atalho para 'ROTATE' com cópia
    @returns nil
    |;
-(DEFUN C:CRT ()
-  (ATS:WriteLog "CRT" nil)
+(DEFUN C:CCRT ()
+  (ATS:WriteLog "CCRT" nil)
   (COMMAND-S "_.ROTATE" (SSGET) "" PAUSE "_COPY")
 )
 

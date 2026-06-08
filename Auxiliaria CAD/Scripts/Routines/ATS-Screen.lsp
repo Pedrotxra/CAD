@@ -114,6 +114,7 @@
    @returns nil
    |;
 (DEFUN C:PC ()
+  (SETQ *iterationsCount* 1)
   (ATS:WriteLog "PC" nil)
   (ATS:SetDefaultValues
     (LIST
@@ -127,6 +128,7 @@
    @returns nil
    |;
 (DEFUN C:PF ()
+  (SETQ *iterationsCount* 1)
   (ATS:WriteLog "PF" nil)
   (ATS:SetDefaultValues
     (LIST
@@ -140,6 +142,7 @@
    @returns nil
    |;
 (DEFUN C:PT ()
+  (SETQ *iterationsCount* 1)
   (ATS:WriteLog "PT" nil)
   (ATS:SetDefaultValues
     (LIST

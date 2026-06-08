@@ -1,5 +1,5 @@
 ;; Acesse a lista de comandos personalizados no link abaixo:
-;; https://autots.notion.site/2807c1e5a57446d1b574376ae7891959?v=87b44155e8974263a78b36b458c53dcf&source=copy_link
+;; https://autots.notion.site/comandos-cad?v=1bc7787814ee4570bcd9c3a4d1fc6884&source=copy_link
 
 ;| Definições do arquivo 'Main'
 (SETQ *autotsFolder* (STRCAT (GETENV "USERPROFILE") "\\OneDrive\\Autots\\")) ; Caminho da pasta Autots
@@ -8,7 +8,6 @@
 (SETQ *automaticCADConfig* T) ; 'T' para automaticamente configurar as variáveis de sistema do CAD
 |;
 
-(SETQ *loginName* (GETVAR "LOGINNAME"))
 ;;; Caminhos das pastas
 (SETQ *enterpriseFolder* (STRCAT (GETENV "USERPROFILE") "\\OneDrive\\"))
   (SETQ *designsFolder* (LIST (QUOTE *enterpriseFolder*) "Construção Civil\\"))
@@ -523,7 +522,7 @@
                         (CONS "BlockForSection" (LAMBDA (/ dynamicBlockPropertiesList thickness height flipState)
                                                   ;; Verifica se o bloco está na vista frontal
                                                   (IF (EQ (STRCASE blockName) (STRCASE (STRCAT (ATS:GetPropertiesValues "Name" *doorBlockList*) *affixSeparator* *frontViewSuffix*)))
-                                                    ;; Troca a camada para pena 2
+                                                    ;; Troca a layer para pena 2
                                                     (ATS:ChangePropertiesValues entity (LIST (CONS 8 (ATS:EvaluateStringSymbolList *pen2*))))
                                                     (PROGN
                                                       (SETQ dynamicBlockPropertiesList (ATS:GetDynamicBlockProperties T nil blockObject nil))
@@ -564,7 +563,7 @@
                           (CONS "BlockForSection" (LAMBDA (/ dynamicBlockPropertiesList thickness height)
                                                     ;; Verifica se o bloco está na vista frontal
                                                     (IF (EQ (STRCASE blockName) (STRCASE (STRCAT (ATS:GetPropertiesValues "Name" *windowBlockList*) *affixSeparator* *frontViewSuffix*)))
-                                                      ;; Troca a camada para pena 2
+                                                      ;; Troca a layer para pena 2
                                                       (ATS:ChangePropertiesValues entity (LIST (CONS 8 (ATS:EvaluateStringSymbolList *pen2*))))
                                                       (PROGN
                                                         (SETQ dynamicBlockPropertiesList (ATS:GetDynamicBlockProperties T nil blockObject nil))
@@ -596,16 +595,50 @@
                          (CONS "Layer" (QUOTE *symbolPen3*))
                          (CONS "TitleDistancePropertyName" "Distância Título")
                          (CONS "NotesDistancePropertyName" "Distância Notas")
+                         (CONS "LineDistancePropertyName" "Distância Linha")
+                         (CONS "ScaleVisibilityPropertyName" "Visibilidade Escala")
                          (CONS "TitleAttributeName" "TÍTULO")
-                         (CONS "SubtitleAttributeName" "SUBTÍTULO")
                          (CONS "ScaleAttributeName" "ESCALA")
                          (CONS "NotesAttributeName" "NOTAS")
-                         (CONS "AdjustTitle" (LAMBDA (entityName / attribute)
-                                               ;; Ajusta o texto da escala
+                         (CONS "AdjustTitle" (LAMBDA (entityName / object scale attribute scaleVisibility titleBoundaries boundaries)
+                                               (SETQ object (ATS:SaveObject entityName))
+                                               (SETQ scale (VLAX-GET-PROPERTY object "XScaleFactor"))
+                                               (COMMAND-S "_.ATTSYNC" "_SELECT" entityName "")
                                                (SETQ attribute (ATS:SearchAttribute nil entityName (LIST (CONS 2 (ATS:GetPropertiesValues "ScaleAttributeName" *titleBlockList*)))))
-                                               (ATS:ChangePropertiesValues attribute (LIST (CONS 1 (STRCAT (COND ((ATS:GetSubstring "" ":" (ATS:GetPropertiesValues 1 attribute))) ("ESCALA 1")) ":" (IF (EQ (TYPE *scaleFactor*) (READ "STR"))
-                                                                                                                                                                                                       (ATS:GetSubstring ":" "" (COND (scaleFactor) (RTOS (* (ATS:GetDynamicBlockProperties nil nil (ATS:SaveObject entityName) "XScaleFactor") *paperUnitsFactor*))))
-                                                                                                                                                                                                       (RTOS (* (COND (scaleFactor) ((ATS:GetPropertiesValues 41 entityName))) *paperUnitsFactor*)))))))))))
+                                               (SETQ scaleVisibility (EQ (ATS:GetDynamicBlockProperties nil nil object (ATS:GetPropertiesValues "ScaleVisibilityPropertyName" *titleBlockList*)) "Com Escala"))
+                                               ;; Ajusta o texto da escala
+                                               (IF scaleVisibility
+                                                 (PROGN
+                                                   (SETQ boundaries (* scale *paperUnitsFactor*))
+                                                   (ATS:ChangePropertiesValues attribute (LIST (CONS 1 (IF (< boundaries 1.0)
+                                                                                                         (STRCAT (VL-STRING-SUBST "," "." (RTOS (EXPT boundaries -1))) ":1")
+                                                                                                         (STRCAT "1:" (RTOS boundaries)))))))
+                                               )
+                                               ;; Obtém os limites do atributo de título
+                                               (SETQ titleBoundaries (ATS:GetObjectBoundaries (ATS:SaveObject (ATS:SearchAttribute nil entityName (LIST (CONS 2 (ATS:GetPropertiesValues "TitleAttributeName" *titleBlockList*)))))))
+                                               (ATS:ChangeDynamicBlockPropertiesValues nil object (LIST (CONS (ATS:GetPropertiesValues "NotesDistancePropertyName" *titleBlockList*) (ATS:RoundUp (* 3.0 scale) (* 9.0 scale) (IF titleBoundaries
+                                                                                                                                                                                                                                (- (CADR (CADR titleBoundaries)) (CADR (CAR titleBoundaries)) (* 5.0 scale))
+                                                                                                                                                                                                                                0.0)))))
+                                               ;; Obtém o x máximo do atributo de título ou de escala, o que for maior, e subtrai pelo x do ponto base do bloco
+                                               (ATS:ChangeDynamicBlockPropertiesValues nil object (LIST (CONS (ATS:GetPropertiesValues "LineDistancePropertyName" *titleBlockList*) (VLAX-MAKE-VARIANT (ATS:RoundUp 0.0 scale (+ (* 0.5 scale) ; Recuo antes do início do texto
+                                                                                                                                                                                                                                 (MAX
+                                                                                                                                                                                                                                   ;; Obtém o comprimento do atributo de título
+                                                                                                                                                                                                                                   (IF titleBoundaries
+                                                                                                                                                                                                                                     (- (CAR (CADR titleBoundaries)) (CAR (CAR titleBoundaries)))
+                                                                                                                                                                                                                                     0.0)
+                                                                                                                                                                                                                                   ;; Obtém o comprimento do atributo de escala
+                                                                                                                                                                                                                                   (IF scaleVisibility
+                                                                                                                                                                                                                                     (PROGN
+                                                                                                                                                                                                                                       (SETQ boundaries (ATS:GetObjectBoundaries (ATS:SaveObject attribute)))
+                                                                                                                                                                                                                                       (+ (* 10.2 scale) ; Tamanho de "ESCALA "
+                                                                                                                                                                                                                                          (- (CAR (CADR boundaries)) (CAR (CAR boundaries)))) ; Tamanho do valor da escala
+                                                                                                                                                                                                                                     )
+                                                                                                                                                                                                                                     (* 16.0 scale))))))))) ; Tamanho de "SEM ESCALA"
+                                               (SETQ boundaries (ATS:GetObjectBoundaries object))
+                                               (IF (EQ (ATS:GetAttributeProperties nil 1 entityName (LIST (CONS 2 (ATS:GetPropertiesValues "NotesAttributeName" *titleBlockList*)))) "")
+                                                 (SETQ boundaries (LIST (CAR boundaries) (LIST (CAR (CADR boundaries)) (IF titleBoundaries (CADR (CADR titleBoundaries)) (CADR (CAR boundaries))))))
+                                               )
+                                               (ATS:ChangeDynamicBlockPropertiesValues nil object (LIST (CONS (ATS:GetPropertiesValues "TitleDistancePropertyName" *titleBlockList*) (ATS:RoundUp (* 12.0 scale) (* 9.0 scale) (- (CADR (CADR boundaries)) (CADR (CAR boundaries)))))))))))
 
 (SETQ *roomBlockList* (LIST
                         (CONS "Name" (STRCAT *standardPrefix* *affixSeparator* "Ambiente"))

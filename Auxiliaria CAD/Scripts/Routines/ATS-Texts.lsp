@@ -505,6 +505,15 @@
   (STRCAT prefix (ATS:AddThousandsSeparator (RTOS (* area (/ (EXPT *unitsFactor* 2) 10000)) 2 2)) suffix)
 )
 
+;| Adequa o nome de usuário
+   @global
+   @param loginName [str] - Nome do usuário
+   @returns [str] - Nome do usuário
+   |;
+(DEFUN ATS:FixLoginName (loginName)
+  (ATS:ConvertToTitleCase (VL-STRING-SUBST " " "." loginName))
+)
+
 ;| Escreve um nome com o sobrenome abreviado
    @global
    @param fullName [str] - Nome completo do usuário
@@ -534,8 +543,8 @@
 ;| Escreve a data atual
    @global
    @param backwards [bool] - 'T' para ANO/MÊS/DIA, ou 'nil' para DIA/MÊS/ANO
-   @param time [bool] - 'T' para incluir a hora
-   @returns 
+   @param time [bool] - 'T' para incluir o horário
+   @returns [str] - Data atual
    |;
 (DEFUN ATS:WriteCurrentDate (backwards time / currentDateAndTime currentDate)
   (SETQ currentDateAndTime (RTOS (GETVAR "CDATE") 2 6))
@@ -565,8 +574,9 @@
    |;
 (DEFUN ATS:WriteLog (commandName errorMessage / currentDateAndTime dwgFile scriptsLogFile)
   (SETQ scriptsLogFile (OPEN (ATS:EvaluateStringSymbolList (APPEND *scriptsLogFolder* *scriptsLog*)) "A"))
-  (WRITE-LINE (STRCAT (VL-STRING-SUBST "|" " " (ATS:WriteCurrentDate T T)) "|" *preset* "|" (GETVAR "DWGPREFIX") "|" (GETVAR "DWGNAME") "|" commandName "|" (COND (errorMessage) (""))) scriptsLogFile)
+  (WRITE-LINE (STRCAT (VL-STRING-SUBST "|" " " (ATS:WriteCurrentDate T T)) "|" *preset* "|" (GETVAR "DWGPREFIX") "|" (GETVAR "DWGNAME") "|" commandName "|" (ITOA (COND (*iterationsCount*) (0))) "|" (COND (errorMessage) (""))) scriptsLogFile)
   (CLOSE scriptsLogFile)
+  (SETQ *iterationsCount* nil)
 )
 
 ;| Cria uma sequência numérica em textos
@@ -596,6 +606,7 @@
       (IF (EQ textEntity "Sim")
         (IF (SETQ textEntity (SSGET (LIST (CONS 0 "ATTRIB,ATTDEF,*TEXT"))))
           (FOREACH textEntity (ATS:SortSelectionByPosition (* *paperUnitsFactor* 0.15) textEntity)
+            (SETQ *iterationsCount* (+ count *iterationsCount*))
             (ATS:ChangePropertiesValues textEntity (LIST (CONS 1 (STRCAT *prefix* (ITOA *startNumber*) *suffix*))))
             (SETQ *startNumber* (+ *startNumber* *increment*))
           )
@@ -604,6 +615,7 @@
                 (PROGN
                   (SETQ textEntity (ENTGET (CAR textEntity)))
                   (WCMATCH (CDR (ASSOC 0 textEntity)) "ATTRIB,ATTDEF,*TEXT")))
+          (SETQ *iterationsCount* (1+ *iterationsCount*))
           (ATS:ChangePropertiesValues textEntity (LIST (CONS 1 (STRCAT *prefix* (ITOA *startNumber*) *suffix*))))
           (SETQ *startNumber* (+ *startNumber* *increment*))
         )
@@ -633,7 +645,7 @@
                    (ATS:GetPropertiesValues 2 entityName)
                    (ATS:GetPropertiesValues 1 entityName)))
       (WHILE (SETQ entityName (CAR (NENTSEL "\nSelecione o texto de destino:\n")))
-        (SETQ entityType (ATS:GetPropertiesValues 0 entityName))
+        (SETQ *iterationsCount* (1+ *iterationsCount*))
         (COND
           ((EQ entityType "ATTDEF") (ATS:ChangePropertiesValues entityName (LIST (CONS 2 text))))
           ((ATS:ChangePropertiesValues entityName (LIST (CONS 1 text))))
@@ -658,6 +670,7 @@
       (DEFUN *error* (errorMessage)
         (ATS:RestoreUsersPreferences commandName errorMessage)
       )
+      (SETQ *iterationsCount* 1)
       (SETQ text (ATS:GetPropertiesValues 1 entityName))
       (IF (WCMATCH text "~\\pxqj;*")
         (ATS:ChangePropertiesValues entityName (LIST (CONS 1 (STRCAT "\\pxqj;" text))))
@@ -682,7 +695,8 @@
       (DEFUN *error* (errorMessage)
         (ATS:RestoreUsersPreferences commandName errorMessage)
       )
-      (VLA-PUT-TEXTSTRING (ATS:SaveObject text) (ATS:FormatArea "A=" "m²" (VLA-GET-AREA (ATS:SaveObject selection))))
+      (SETQ *iterationsCount* 1)
+      (VLA-PUT-TEXTSTRING (ATS:SaveObject text) (ATS:FormatArea "A=" " m²" (VLA-GET-AREA (ATS:SaveObject selection))))
       (ATS:RestoreUsersPreferences commandName nil)
     )
   )

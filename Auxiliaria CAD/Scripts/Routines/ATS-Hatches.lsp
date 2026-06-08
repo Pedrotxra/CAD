@@ -304,6 +304,7 @@
       (IF *currentSelection*
         (SETQ hatchSelection (ATS:FilterSelection nil nil *currentSelection* (LIST (CONS 0 "HATCH"))))
       )
+      (SETQ *iterationsCount* (SSLENGTH (COND (hatchSelection) (*currentSelection*) ((SSADD)))))
       (IF hatchSelection
         (ATS:EditHatch hatchSelection hatchProperties)
         (ATS:MakeHatch *currentSelection* hatchProperties)

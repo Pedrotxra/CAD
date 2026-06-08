@@ -31,6 +31,7 @@
    |;
 (DEFUN ATS:ApplyToSelection (selection applyFunction / count)
   (SETQ count (SSLENGTH selection))
+  (SETQ *iterationsCount* (+ count *iterationsCount*))
   (REPEAT count
     (SETQ count (1- count))
     (APPLY (FUNCTION applyFunction) (LIST (SSNAME selection count)))
@@ -61,6 +62,7 @@
    |;
 (DEFUN ATS:ChangeSelectionProperties (selection property-valueList / count entityName)
   (SETQ count (SSLENGTH selection))
+  (SETQ *iterationsCount* (+ count *iterationsCount*))
   (REPEAT count
     (SETQ count (1- count))
     (SETQ entityName (SSNAME selection count))
@@ -216,21 +218,20 @@
    @param selection [ss/lst] - Seleção
    @returns [lst] - Lista com os pontos mínimo e máximo
    |;
-(DEFUN ATS:GetSelectionBoundaries (selection / count boundaries minPointsList maxPointslist)
+(DEFUN ATS:GetSelectionBoundaries (selection / count boundaries xMin yMin xMax yMax)
   (SETQ count (SSLENGTH selection))
-  ;; Encontra os primeiros pontos mínimo e máximo
-  (WHILE (AND (>= count 0) (NOT minPointsList))
-    (SETQ count (1- count))
-    (SETQ boundaries (ATS:GetObjectBoundaries (ATS:SaveObject (SSNAME selection count))))
-    (IF boundaries
-      (PROGN
-        (SETQ xMin (CAR (CAR boundaries)))
-        (SETQ yMin (CADR (CAR boundaries)))
-        (SETQ xMax (CAR (CADR boundaries)))
-        (SETQ yMax (CADR (CADR boundaries)))
-      )
+  ;; Faz a primeira iteração
+  (SETQ count (1- count))
+  (SETQ boundaries (ATS:GetObjectBoundaries (ATS:SaveObject (SSNAME selection count))))
+  (IF boundaries
+    (PROGN
+      (SETQ xMin (CAR (CAR boundaries)))
+      (SETQ yMin (CADR (CAR boundaries)))
+      (SETQ xMax (CAR (CADR boundaries)))
+      (SETQ yMax (CADR (CADR boundaries)))
     )
   )
+  ;; Compara os primeiros resultados obtidos com os próximos e armazena o menor e maior valor de cada coordenada
   (REPEAT count
     (SETQ count (1- count))
     (SETQ boundaries (ATS:GetObjectBoundaries (ATS:SaveObject (SSNAME selection count))))
@@ -312,7 +313,7 @@
 ;| Filtra blocos com o mesmo nome do bloco de referência
    @returns nil
    |;
-(DEFUN C:FB (/ *error* commandName selection name)
+(DEFUN C:FB (/ *error* commandName usersMessage selection name)
   (SETQ commandName "FB")
   (COND
     ((NOT (SETQ selection (ATS:SelectSingleObject (LIST (CONS 0 "INSERT"))))) (PROMPT "\nNenhum bloco foi selecionado.\n"))
@@ -324,12 +325,13 @@
       (SETQ name (ATS:GetEffectiveName (ATS:SaveObject selection)))
       (SETQ selection (LIST (CONS 0 "INSERT")))
       (PROMPT "\nSelecione os blocos a serem filtrados, ou Enter para selecionar todos.\n")
-      (IF (SETQ selection (COND ((SSGET selection)) ((SSGET "_A" (APPEND selection (LIST (CONS 410 (GETVAR "CTAB"))))))))
-        (SETQ selection (ATS:FilterSelection nil nil selection (LIST (CONS 2 name))))
+      (IF (AND (SETQ selection (COND ((SSGET selection)) ((SSGET "_A" (APPEND selection (LIST (CONS 410 (GETVAR "CTAB"))))))))
+               (SETQ selection (ATS:FilterSelection nil nil selection (LIST (CONS 2 name)))))
+        (SETQ *iterationsCount* (SSLENGTH selection))
       )
+      (SETQ usersMessage (STRCAT "\n" (ITOA *iterationsCount*) " blocos selecionados.\n"))
       (ATS:RestoreUsersPreferences commandName nil)
       (SSSETFIRST nil selection)
-      (PROMPT (STRCAT "\n" (IF selection (ITOA (SSLENGTH selection)) "0") " blocos selecionados.\n"))
     )
   )
 )
@@ -337,7 +339,7 @@
 ;| Filtra objetos com o mesmo padrão de hachura da entidade de referência
    @returns nil
    |;
-(DEFUN C:FH (/ *error* commandName selection)
+(DEFUN C:FH (/ *error* commandName usersMessage selection)
   (SETQ commandName "FH")
   (COND
     ((NOT (SETQ selection (ATS:SelectSingleObject (CONS 0 "HATCH")))) (PROMPT "\nNenhuma hachura foi selecionada.\n"))
@@ -348,10 +350,12 @@
       )
       (SETQ selection (LIST (CONS 0 "HATCH") (CONS 2 (ATS:GetPropertiesValues 2 selection))))
       (PROMPT "\nSelecione as hachuras a serem filtradas, ou Enter para selecionar todas.\n")
-      (SETQ selection (COND ((SSGET selection)) ((SSGET "_A" (APPEND selection (LIST (CONS 410 (GETVAR "CTAB"))))))))
+      (IF (SETQ selection (COND ((SSGET selection)) ((SSGET "_A" (APPEND selection (LIST (CONS 410 (GETVAR "CTAB"))))))))
+        (SETQ *iterationsCount* (SSLENGTH selection))
+      )
+      (SETQ usersMessage (STRCAT "\n" (ITOA *iterationsCount*) " hachuras selecionadas.\n"))
       (ATS:RestoreUsersPreferences commandName nil)
       (SSSETFIRST nil selection)
-      (PROMPT (STRCAT "\n" (IF selection (ITOA (SSLENGTH selection)) "0") " hachuras selecionadas.\n"))
     )
   )
 )
@@ -359,7 +363,7 @@
 ;| Filtra objetos com o mesmo layer da entidade de referência
    @returns nil
    |;
-(DEFUN C:FL (/ *error* commandName selection)
+(DEFUN C:FL (/ *error* commandName usersMessage selection)
   (SETQ commandName "FL")
   (COND
     ((NOT (SETQ selection (ATS:SelectSingleObject nil))) (PROMPT "\nNenhum objeto foi selecionado.\n"))
@@ -370,10 +374,12 @@
       )
       (SETQ selection (LIST (CONS 8 (ATS:GetPropertiesValues 8 selection))))
       (PROMPT "\nSelecione os objetos a serem filtrados, ou Enter para selecionar todos.\n")
-      (SETQ selection (COND ((SSGET selection)) ((SSGET "_A" (APPEND selection (LIST (CONS 410 (GETVAR "CTAB"))))))))
+      (IF (SETQ selection (COND ((SSGET selection)) ((SSGET "_A" (APPEND selection (LIST (CONS 410 (GETVAR "CTAB"))))))))
+        (SETQ *iterationsCount* (SSLENGTH selection))
+      )
+      (SETQ usersMessage (STRCAT "\n" (ITOA *iterationsCount*) " objetos selecionados.\n"))
       (ATS:RestoreUsersPreferences commandName nil)
       (SSSETFIRST nil selection)
-      (PROMPT (STRCAT "\n" (IF selection (ITOA (SSLENGTH selection)) "0") " objetos selecionados.\n"))
     )
   )
 )
@@ -381,7 +387,7 @@
 ;| Filtra blocos com o trecho de referência no nome
    @returns nil
    |;
-(DEFUN C:FNB (/ *error* commandName searchValue selection)
+(DEFUN C:FNB (/ *error* commandName usersMessage searchValue selection)
   (SETQ commandName "FNB")
   (COND
     ((NOT (SETQ searchValue (PROGN (INITGET 1) (GETSTRING T "\nInsira o trecho a ser contido no nome do bloco:\n")))) (PROMPT "\nO trecho não foi introduzido.\n"))
@@ -392,12 +398,13 @@
       )
       (SETQ selection (LIST (CONS 0 "INSERT")))
       (PROMPT "\nSelecione os blocos a serem filtrados, ou Enter para selecionar todos.\n")
-      (IF (SETQ selection (COND ((SSGET selection)) ((SSGET "_A" (APPEND selection (LIST (CONS 410 (GETVAR "CTAB"))))))))
-        (SETQ selection (ATS:FilterSelection nil T selection (LIST (CONS 2 (STRCAT "*" searchValue "*")))))
+      (IF (AND (SETQ selection (COND ((SSGET selection)) ((SSGET "_A" (APPEND selection (LIST (CONS 410 (GETVAR "CTAB"))))))))
+               (SETQ selection (ATS:FilterSelection nil T selection (LIST (CONS 2 (STRCAT "*" searchValue "*"))))))
+        (SETQ *iterationsCount* (SSLENGTH selection))
       )
+      (SETQ usersMessage (STRCAT "\n" (ITOA *iterationsCount*) " blocos selecionados.\n"))
       (ATS:RestoreUsersPreferences commandName nil)
       (SSSETFIRST nil selection)
-      (PROMPT (STRCAT "\n" (IF selection (ITOA (SSLENGTH selection)) "0") " blocos selecionados.\n"))
     )
   )
 )
@@ -405,7 +412,7 @@
 ;| Filtra hachuras com o trecho de referência no nome
    @returns nil
    |;
-(DEFUN C:FNH (/ *error* commandName selection)
+(DEFUN C:FNH (/ *error* commandName usersMessage selection)
   (SETQ commandName "FNH")
   (COND
     ((NOT (SETQ selection (PROGN (INITGET 1) (GETSTRING T "\nInsira o trecho a ser contido no nome da hachura:\n")))) (PROMPT "\nO trecho não foi introduzido.\n"))
@@ -416,10 +423,12 @@
       )
       (SETQ selection (LIST (CONS 0 "HATCH") (CONS 2 (STRCAT "*" selection "*"))))
       (PROMPT "\nSelecione as hachuras a serem filtradas, ou Enter para selecionar todas.\n")
-      (SETQ selection (COND ((SSGET selection)) ((SSGET "_A" (APPEND selection (LIST (CONS 410 (GETVAR "CTAB"))))))))
+      (IF (SETQ selection (COND ((SSGET selection)) ((SSGET "_A" (APPEND selection (LIST (CONS 410 (GETVAR "CTAB"))))))))
+        (SETQ *iterationsCount* (SSLENGTH selection))
+      )
+      (SETQ usersMessage (STRCAT "\n" (ITOA *iterationsCount*) " hachuras selecionadas.\n"))
       (ATS:RestoreUsersPreferences commandName nil)
       (SSSETFIRST nil selection)
-      (PROMPT (STRCAT "\n" (IF selection (ITOA (SSLENGTH selection)) "0") " hachuras selecionadas.\n"))
     )
   )
 )
@@ -427,7 +436,7 @@
 ;| Filtra objetos de layers com o trecho de referência no nome
    @returns nil
    |;
-(DEFUN C:FNL (/ *error* commandName selection)
+(DEFUN C:FNL (/ *error* commandName usersMessage selection)
   (SETQ commandName "FNL")
   (COND
     ((NOT (SETQ selection (PROGN (INITGET 1) (GETSTRING T "\nInsira o trecho a ser contido no nome do layer:\n")))) (PROMPT "\nO trecho não foi introduzido.\n"))
@@ -438,10 +447,12 @@
       )
       (SETQ selection (LIST (CONS 8 (STRCAT "*" selection "*"))))
       (PROMPT "\nSelecione os objetos a serem filtrados, ou Enter para selecionar todos.\n")
-      (SETQ selection (COND ((SSGET selection)) ((SSGET "_A" (APPEND selection (LIST (CONS 410 (GETVAR "CTAB"))))))))
+      (IF (SETQ selection (COND ((SSGET selection)) ((SSGET "_A" (APPEND selection (LIST (CONS 410 (GETVAR "CTAB"))))))))
+        (SETQ *iterationsCount* (SSLENGTH selection))
+      )
+      (SETQ usersMessage (STRCAT "\n" (ITOA *iterationsCount*) " objetos selecionados.\n"))
       (ATS:RestoreUsersPreferences commandName nil)
       (SSSETFIRST nil selection)
-      (PROMPT (STRCAT "\n" (IF selection (ITOA (SSLENGTH selection)) "0") " objetos selecionados.\n"))
     )
   )
 )

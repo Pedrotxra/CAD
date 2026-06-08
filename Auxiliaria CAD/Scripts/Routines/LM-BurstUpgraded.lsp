@@ -64,7 +64,9 @@
    @returns [nil] - Explode os objetos selecionados em todos os níveis
    |;
 (DEFUN ATS:BurstNested (selection)
-  (LM:burstsel (ATS:FilterSelection T T selection (LIST (CONS 0 "DIMENSION,ELLIPSE,HATCH,MTEXT,OLE2FRAME,SOLID,SPLINE"))) T)
+  (SETQ selection (ATS:FilterSelection T T selection (LIST (CONS 0 "DIMENSION,ELLIPSE,HATCH,MTEXT,OLE2FRAME,SOLID,SPLINE"))))
+  (SETQ *iterationsCount* (+ (SSLENGTH (COND (selection) ((SSADD)))) *iterationsCount*))
+  (LM:burstsel selection T)
 )
 
 ;|(defun c:pburst nil (LM:burst nil))

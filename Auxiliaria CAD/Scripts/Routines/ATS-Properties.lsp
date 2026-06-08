@@ -70,8 +70,8 @@
    @param flags [int] - Máscara de bits para as preferências a serem salvas:
                         1 - UCS
                         2 - Pontos de referência
-                        4 - Camada atual
-                        8 - Configuração das camadas
+                        4 - Layer atual
+                        8 - Configuração dos layers
                         16 - Visualização atual
    @returns [any] - Valor da última preferência salva
    |;
@@ -84,6 +84,7 @@
   (IF *fullyUndo*
     (COMMAND-S "_.UNDO" "_BEGIN")
   )
+  (SETQ *iterationsCount* 0)
   (IF (AND (EQ (TYPE flags) (READ "INT")) (> flags 0))
     (PROGN
       ;; Armazena o UCS atual
@@ -106,14 +107,14 @@
           (SETVAR "OSMODE" 16384)
         )
       )
-      ;; Armazena a camada atual
+      ;; Armazena o layer atual
       (IF (NOT (ZEROP (LOGAND flags 4)))
         (PROGN
           (SETQ *currentLayer* (GETVAR "CLAYER"))
           (SETVAR "CLAYER" "0")
         )
       )
-      ;; Armazena as camadas inativas
+      ;; Armazena os layers inativas
       (IF (NOT (ZEROP (LOGAND flags 8)))
         (ATS:ActivateLayers)
       )
@@ -163,7 +164,8 @@
       (SETVAR "CMDECHO" 1)
     )
   )
-  (PRINC)
+  (PRINC usersMessage)
+  (SETQ usersMessage nil)
 )
 
 ;| Verifica se a entidade é anotativa
@@ -265,27 +267,30 @@
       (IF selection
         (PROGN
           (SETQ count (SSLENGTH selection))
+          (SETQ *iterationsCount* (+ count *iterationsCount*))
           (REPEAT count
             (SETQ count (1- count))
             (SETQ entityName (SSNAME selection count))
-            ;; Trata bloco de título para ajustar o conteúdo da escala
-            (IF (EQ (ATS:GetEffectiveName (ATS:SaveObject entityName)) (ATS:GetPropertiesValues "Name" *titleBlockList*))
-              (PROGN
-                (SETQ object (ATS:GetPropertiesValues "AdjustTitle" *titleBlockList*))
-                (APPLY (FUNCTION dynamicBlockPropertiesList) (LIST entityName))
-              )
+            (SETQ object (ATS:SaveObject entityName))
+            ;; Trata blocos de título
+            (IF (AND (EQ (ATS:GetEffectiveName (ATS:SaveObject entityName)) (ATS:GetPropertiesValues "Name" *titleBlockList*))
+                     (SETQ titlesHeight (ATS:GetPropertiesValues "AdjustTitle" *titleBlockList*)))
+              (APPLY (FUNCTION titlesHeight) (LIST entityName))
             )
             ;; Obtém as escalas anotativas
             (SETQ entityProperties (APPEND (ATS:GetEntityScalesList entityName) entityProperties))
-            ;; Obtém as propriedades dinâmicas
+            ;; Obtém as propriedades dinâmicas de cada elemento
             (SETQ dynamicBlockPropertiesList (CONS (CONS object (ATS:GetDynamicBlockProperties T nil object nil)) dynamicBlockPropertiesList))
           )
+          ;; Adiciona a escala à seleção
           (ATS:AddAnnotativeScale selection scaleFactor)
+          ;; Remove as demais escalas da seleção
           (COMMAND "_.-OBJECTSCALE" selection "" "_DELETE")
           (FOREACH scale (ATS:RemoveDuplicates (VL-REMOVE scaleFactor entityProperties))
             (COMMAND scale)
           )
           (COMMAND "")
+          ;; Reaplica as propriedades dinâmicas de cada elemento
           (FOREACH dynamicBlockProperty (VL-REMOVE-IF (FUNCTION (LAMBDA (object) (EQ (LENGTH object) 1))) dynamicBlockPropertiesList)
             (ATS:ChangeDynamicBlockPropertiesValues nil (CAR dynamicBlockProperty) (CDR dynamicBlockProperty))
           )
@@ -303,6 +308,7 @@
             (SETQ titlesHeight (* *titlesHeight* scaleFactor))
             (SETQ secondaryTextsHeight (* *secondaryTextsHeight* scaleFactor))
             (SETQ count (SSLENGTH selection))
+            (SETQ *iterationsCount* (+ count *iterationsCount*))
             (REPEAT count
               (SETQ count (1- count))
               (SETQ entityName (SSNAME selection count))
@@ -311,16 +317,18 @@
                 ((ATS:IsAnnotative entityName))
                 ((EQ entityProperties "INSERT")
                   (SETQ object (ATS:SaveObject entityName))
-                  ;; Trata bloco de título para ajustar o conteúdo da escala
-                  (IF (OR (AND (EQ (ATS:GetEffectiveName object) (ATS:EvaluateStringSymbolList (ATS:GetPropertiesValues "Name" *titleBlockList*)))
-                               (SETQ dynamicBlockPropertiesList (ATS:GetPropertiesValues "AdjustTitle" *titleBlockList*))
-                               (APPLY (FUNCTION dynamicBlockPropertiesList) (LIST entityName)))
-                          (EQ (ATS:GetEffectiveName object) (ATS:EvaluateStringSymbolList (ATS:GetPropertiesValues "Name" *breakLineBlockList*)))
-                          (WCMATCH (ATS:GetPropertiesValues 8 entityName) (ATS:ListToString "," (MAPCAR (FUNCTION ATS:EvaluateStringSymbolList) (VL-REMOVE nil (LIST *symbolPen1* *symbolPen2* *symbolPen3* *symbolPen4* *symbolPen5* *symbolPen6*))))))
-                    (PROGN
-                      (SETQ dynamicBlockPropertiesList (ATS:GetDynamicBlockProperties T nil object nil))
-                      (COMMAND-S "_.SCALE" entityName "" (ATS:GetPropertiesValues 10 entityName) (/ scaleFactor (ATS:GetPropertiesValues 41 entityName)))
-                      (ATS:ChangeDynamicBlockPropertiesValues nil object dynamicBlockPropertiesList))))
+                  (COND
+                    ;; Trata blocos de título
+                    ((AND (EQ (ATS:GetEffectiveName object) (ATS:EvaluateStringSymbolList (ATS:GetPropertiesValues "Name" *titleBlockList*)))
+                          (SETQ dynamicBlockPropertiesList (ATS:GetPropertiesValues "AdjustTitle" *titleBlockList*)))
+                       (COMMAND-S "_.SCALE" entityName "" (ATS:GetPropertiesValues 10 entityName) (/ scaleFactor (ATS:GetPropertiesValues 41 entityName)))
+                       (APPLY (FUNCTION dynamicBlockPropertiesList) (LIST entityName)))
+                    ;; Trata demais blocos que são afetados por escala
+                    ((OR (EQ (ATS:GetEffectiveName object) (ATS:EvaluateStringSymbolList (ATS:GetPropertiesValues "Name" *breakLineBlockList*)))
+                         (WCMATCH (ATS:GetPropertiesValues 8 entityName) (ATS:ListToString "," (MAPCAR (FUNCTION ATS:EvaluateStringSymbolList) (VL-REMOVE nil (LIST *symbolPen1* *symbolPen2* *symbolPen3* *symbolPen4* *symbolPen5* *symbolPen6*))))))
+                       (SETQ dynamicBlockPropertiesList (ATS:GetDynamicBlockProperties T nil object nil))
+                       (COMMAND-S "_.SCALE" entityName "" (ATS:GetPropertiesValues 10 entityName) (/ scaleFactor (ATS:GetPropertiesValues 41 entityName)))
+                       (ATS:ChangeDynamicBlockPropertiesValues nil object dynamicBlockPropertiesList))))
                 ((EQ entityProperties "MULTILEADER")
                   (VLA-PUT-SCALEFACTOR (ATS:SaveObject entityName) scaleFactor))
                 ((WCMATCH entityProperties "*TEXT")
@@ -437,11 +445,9 @@
    @returns [lst] - Lista com os pontos mínimo e máximo
    |;
 (DEFUN ATS:GetObjectBoundaries (object / minPoint maxPoint)
-  (IF (VLAX-METHOD-APPLICABLE-P object "GETBOUNDINGBOX")
-    (PROGN
-      (VLA-GETBOUNDINGBOX object (QUOTE minPoint) (QUOTE maxPoint))
-      (LIST (VLAX-SAFEARRAY->LIST minPoint) (VLAX-SAFEARRAY->LIST maxPoint))
-    )
+  (IF (AND (VLAX-METHOD-APPLICABLE-P object "GETBOUNDINGBOX")
+           (NOT (VL-CATCH-ALL-ERROR-P (VL-CATCH-ALL-APPLY (FUNCTION VLA-GETBOUNDINGBOX) (LIST object (QUOTE minPoint) (QUOTE maxPoint))))))
+    (LIST (VLAX-SAFEARRAY->LIST minPoint) (VLAX-SAFEARRAY->LIST maxPoint))
   )
 )
 
@@ -630,6 +636,7 @@
   )
   ;; Altera o nome do item na tabela
   (FOREACH name namesList
+    (SETQ *iterationsCount* (1+ *iterationsCount*))
     (COMMAND-S "_.-RENAME" (STRCAT "_" tableName) name (ATS:NameTableUniquely tableName (COND (integerAffix) (*duplicateAffix*)) (IF affixPosition (STRCAT affix *affixSeparator* name) (STRCAT name *affixSeparator* affix))))
   )
 )
@@ -648,6 +655,7 @@
     (SETQ namesList (ATS:GetTableProperties nil tableName 2 nil))
   )
   (FOREACH name namesList
+    (SETQ *iterationsCount* (1+ *iterationsCount*))
     (IF (WCMATCH name (IF affixPosition (STRCAT oldAffix "*") (STRCAT "*" oldAffix)))
       (COMMAND-S "_.-RENAME" (STRCAT "_" tableName) name (ATS:NameTableUniquely tableName *duplicateAffix* (VL-STRING-SUBST newAffix oldAffix name)))
     )
@@ -682,6 +690,7 @@
    @returns nil
    |;
 (DEFUN C:ENT ()
+  (SETQ *iterationsCount* 1)
   (ATS:WriteLog "ENT" nil)
   (ATS:SelectEntity nil)
 )
@@ -690,6 +699,7 @@
    @returns nil
    |;
 (DEFUN C:NENT ()
+  (SETQ *iterationsCount* 1)
   (ATS:WriteLog "NENT" nil)
   (ATS:SelectEntity T)
 )
@@ -698,6 +708,7 @@
    @returns nil
    |;
 (DEFUN C:CENT (/ entityName)
+  (SETQ *iterationsCount* 1)
   (ATS:WriteLog "CENT" nil)
   (SETQ entityName (CAR (ENTSEL)))
   (IF entityName

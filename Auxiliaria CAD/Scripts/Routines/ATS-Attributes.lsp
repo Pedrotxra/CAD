@@ -109,6 +109,7 @@
         (ATS:RestoreUsersPreferences commandName errorMessage)
       )
       (SETQ count (SSLENGTH selection))
+      (SETQ *iterationsCount* count)
       (REPEAT count
         (SETQ count (1- count))
         (SETQ textEntityName (SSNAME selection count))
@@ -164,6 +165,7 @@
         (ATS:RestoreUsersPreferences commandName errorMessage)
       )
       (SETQ count (SSLENGTH selection))
+      (SETQ *iterationsCount* count)
       (REPEAT count
         (SETQ count (1- count))
         (ATS:EditBlockAttributes nil (SSNAME selection count) (LIST (CONS 0 "ATTRIB")) (LIST (CONS 1 "")))
@@ -186,6 +188,7 @@
       (DEFUN *error* (errorMessage)
         (ATS:RestoreUsersPreferences commandName errorMessage)
       )
+      (SETQ *iterationsCount* 1)
       (ATS:ChangePropertiesValues entityName (LIST (CONS 50 rotation)))
       (COMMAND-S "_.REGEN")
       (ATS:RestoreUsersPreferences commandName nil)
@@ -207,6 +210,7 @@
         (ATS:RestoreUsersPreferences commandName errorMessage)
       )
       (SETQ count (SSLENGTH selection))
+      (SETQ *iterationsCount* count)
       (REPEAT count
         (SETQ count (1- count))
         (ATS:EditBlockAttributes nil (SSNAME selection count) (LIST (CONS 0 "ATTRIB")) (LIST (CONS 50 rotation)))

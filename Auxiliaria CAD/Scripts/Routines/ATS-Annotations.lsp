@@ -2,6 +2,7 @@
    @returns nil
    |;
 (DEFUN C:CT ()
+  (SETQ *iterationsCount* 1)
   (ATS:WriteLog "CT" nil)
   (COMMAND-S "_.DIMLINEAR")
 )
@@ -10,6 +11,7 @@
    @returns nil
    |;
 (DEFUN C:CTC ()
+  (SETQ *iterationsCount* 1)
   (ATS:WriteLog "CTC" nil)
   (COMMAND-S "_.DIMCONTINUE")
 )
@@ -18,6 +20,7 @@
    @returns nil
    |;
 (DEFUN C:CTA ()
+  (SETQ *iterationsCount* 1)
   (ATS:WriteLog "CTA" nil)
   (COMMAND-S "_.DIMALIGNED")
 )
@@ -62,6 +65,7 @@
       (DEFUN *error* (errorMessage)
         (ATS:RestoreUsersPreferences commandName errorMessage)
       )
+      (SETQ *iterationsCount* 1)
       (SETQ blockScale (IF (EQ (TYPE *scaleFactor*) (READ "STR"))
                          (PROGN
                            (SETQ *scaleFactor* (GETVAR "CANNOSCALE"))

@@ -25,14 +25,14 @@
 
 ;| Ajusta o desenho para o preset atual
    @global
-   @param presetVariables [lst] - Lista de variáveis de camadas, hachuras e blocos e seus valores
+   @param presetVariables [lst] - Lista de variáveis de layers, hachuras e blocos e seus valores
    @returns [any] - Valor da última variável iterada
    |;
 (DEFUN ATS:ApplyPresetVariablesChanges (presetVariables / oldScaleFactor oldUnitsFactor newValue selection count oldName newName)
   (SETQ oldScaleFactor (CADR (ASSOC "ScaleFactor" presetVariables)))
   (SETQ oldUnitsFactor (CADR (ASSOC "UnitsFactor" presetVariables)))
   (SETQ currentScaleFactor *scaleFactor*)
-  ;; Aplica a alteração nas camadas
+  ;; Aplica a alteração nos layers
   (FOREACH layer (CADR (ASSOC "Layers" presetVariables))
     (SETQ newValue (EVAL (CAR layer)))
     (SETQ layer (CDR layer))
@@ -120,6 +120,7 @@
               (SETQ oldName 257)
             )
             (SETQ count (SSLENGTH selection))
+            (SETQ *iterationsCount* count)
             (REPEAT count
               (SETQ count (1- count))
               (SETQ selectionHatch (SSNAME selection count))

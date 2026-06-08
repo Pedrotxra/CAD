@@ -233,6 +233,7 @@
    @returns nil
    |;
 (DEFUN C:TEMP ()
+  (SETQ *iterationsCount* 1)
   (ATS:WriteLog "TEMP" nil)
   (STARTAPP "EXPLORER" (GETVAR "SAVEFILEPATH"))
 )
@@ -241,6 +242,7 @@
    @returns nil
    |;
 (DEFUN C:LOG ()
+  (SETQ *iterationsCount* 1)
   (ATS:WriteLog "LOG" nil)
   (STARTAPP "NOTEPAD" (ATS:EvaluateStringSymbolList (APPEND *scriptsLogFolder* *scriptsLog*)))
 )
@@ -249,6 +251,7 @@
    @returns nil
    |;
 (DEFUN C:LOGF ()
+  (SETQ *iterationsCount* 1)
   (ATS:WriteLog "LOGF" nil)
   (STARTAPP "EXPLORER" (ATS:EvaluateStringSymbolList *scriptsLogFolder*))
 )
@@ -257,6 +260,7 @@
   @returns nil
   |;
 (DEFUN C:CFG ()
+  (SETQ *iterationsCount* 1)
   (ATS:WriteLog "CFG" nil)
   (STARTAPP "EXPLORER" *configurationFolder*)
 )
@@ -265,6 +269,7 @@
   @returns nil
   |;
 (DEFUN C:CFGR ()
+  (SETQ *iterationsCount* 1)
   (ATS:WriteLog "CFGR" nil)
   (STARTAPP "EXPLORER" *roamingFolder*)
 )

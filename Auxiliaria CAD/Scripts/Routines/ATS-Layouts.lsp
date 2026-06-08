@@ -246,6 +246,7 @@
         (SETQ projectName (STRCASE projectName))
       )
       (SETQ count (SSLENGTH selection))
+      (SETQ *iterationsCount* count)
       (REPEAT count
         (SETQ count (1- count))
         (SETQ entityname (SSNAME selection count))
@@ -279,6 +280,7 @@
         (ATS:RestoreUsersPreferences commandName errorMessage)
       )
       (SETQ count (SSLENGTH selection))
+      (SETQ *iterationsCount* count)
       (REPEAT count
         (SETQ count (1- count))
         (SETQ entityName (SSNAME selection count))
@@ -319,6 +321,7 @@
       (SETQ currentDate (ATS:WriteCurrentDate nil nil))
       (SETQ responsible (STRCASE (ATS:WriteShortenedName *loginName*)))
       (SETQ count (SSLENGTH selection))
+      (SETQ *iterationsCount* count)
       (IF (EQ revisionChange "Subir")
         (REPEAT count
           (SETQ count (1- count))
@@ -397,6 +400,7 @@
       )
       ;; Altera a numeração das folhas
       (FOREACH sheet (REVERSE (ATS:SortSelectionByPosition (* *paperUnitsFactor* 0.15) selection))
+        (SETQ *iterationsCount* (1+ *iterationsCount*))
         (ATS:EditBlockAttributes nil sheet (LIST (CONS 2 (ATS:GetPropertiesValues "SheetNumberAttributeName" *titleBlockBlockList*))) (LIST (CONS 1 (STRCAT (ATS:AddLeftZeros sheetNumberTotalDigits (ITOA count)) sheetNumberSuffix))))
         (SETQ count (1- count))
       )
@@ -480,6 +484,7 @@
    @returns [nil] - Plota a folha
    |;
 (DEFUN ATS:PlotSheet (plotter plotStyle savePath sheetEntityName / sheetSize bottom top sheetName sheetOrientation)
+  (SETQ *iterationsCount* (1+ *iterationsCount*))
   (IF (EQ (TYPE sheetEntityName) (READ "ENAME"))
     (PROGN
       (SETQ sheetSize (ATS:GetSheetSize sheetEntityName))
@@ -514,7 +519,7 @@
   )
 )
 
-;| Gera uma viewport, ou altera a camada atual ou do objeto selecionado
+;| Gera uma viewport, ou altera o layer atual ou do objeto selecionado
    @returns nil
    |;
 (DEFUN C:VV ()
@@ -540,14 +545,15 @@
   (SETQ commandName "LF")
   (COND
     ((EQ (GETVAR "CTAB") "Model") (PROMPT "\nO comando não pode ser utilizado no Model.\n"))
+    ((PROMPT "\nAtenção! O comando pode não enviar os objetos para a viewport desejada. Garanta que ela esteja visível na tela. Em caso de problema, entra e saia da viewport antes de executar o comando.\n"))
+    ((NOT (SETQ selection (SSGET))) (PROMPT "\nNenhum objeto foi selecionado.\n"))
     (T
       (PROGN
-        (PROMPT "\nAtenção! O comando pode não enviar os objetos para a viewport desejada. Garanta que ela esteja visível na tela. Em caso de problema, entra e saia da viewport antes de executar o comando.\n")
-        (SETQ selection (SSGET))
         (ATS:SaveUsersPreferences nil)
         (DEFUN *error* (errorMessage)
           (ATS:RestoreUsersPreferences commandName errorMessage)
         )
+        (SETQ *iterationsCount* (SSLENGTH selection))
         (COMMAND-S "_.CHSPACE" selection "" "") 
         (COMMAND-S "_.PSPACE")
         (ATS:RestoreUsersPreferences commandName nil)
@@ -564,13 +570,14 @@
   (COND
     ((EQ (GETVAR "CTAB") "Model") (PROMPT "\nO comando não pode ser utilizado no Model.\n"))
     ((EQ (GETVAR "CVPORT") 1) (PROMPT "\nO comando deve ser utilizado com uma viewport aberta.\n"))
+    ((NOT (SETQ selection (SSGET))) (PROMPT "\nNenhum objeto foi selecionado.\n"))
     (T
       (PROGN
-        (SETQ selection (SSGET))
         (ATS:SaveUsersPreferences nil)
         (DEFUN *error* (errorMessage)
           (ATS:RestoreUsersPreferences commandName errorMessage)
         )
+        (SETQ *iterationsCount* (SSLENGTH selection))
         (COMMAND-S "_.CHSPACE" selection "" "") 
         (COMMAND-S "_.MSPACE")
         (ATS:RestoreUsersPreferences commandName nil)
@@ -582,20 +589,20 @@
 ;| Altera automaticamente informações de folhas
    @returns nil
    |;
-(DEFUN C:FF (/ commandName)
+(DEFUN C:FF (/ commandName change)
   (SETQ commandName "FF")
-  (SETQ selection (ATS:GetKeyword "Revisão" (LIST "Informações" "Conteúdo" "Revisão" "Numeração") "\nEscolha o que deseja alterar nas folhas:\n"))
+  (SETQ change (ATS:GetKeyword "Revisão" (LIST "Informações" "Conteúdo" "Revisão" "Numeração") "\nEscolha o que deseja alterar nas folhas:\n"))
   (COND
-    ((EQ selection "Informações")
+    ((EQ change "Informações")
       (ATS:FillSheetsInfo)
     )
-    ((EQ selection "Conteúdo")
+    ((EQ change "Conteúdo")
       (ATS:FillSheetsContent)
     )
-    ((EQ selection "Revisão")
+    ((EQ change "Revisão")
       (ATS:UpdateSheetsRevision)
     )
-    ((EQ selection "Numeração")
+    ((EQ change "Numeração")
       (ATS:RenumberSheets)
     )
   )

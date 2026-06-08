@@ -121,11 +121,12 @@
             ;; Carrega as rotinas e o preset padrão
             (ATS:LoadScripts *preset*)
             ;; Cria o arquivo de log
+            (SETQ *loginName* (ATS:FixLoginName *loginName*))
             (SETQ logName (ATS:EvaluateStringSymbolList (APPEND *scriptsLogFolder* *scriptsLog*)))
             (IF (NOT (FINDFILE logName))
               (PROGN
                 (SETQ logName (OPEN logName "W"))
-                (WRITE-LINE "Data|Horário|Preset|Diretório|Arquivo|Comando|Erro" logName)
+                (WRITE-LINE "Data|Horário|Preset|Diretório|Arquivo|Comando|Iterações|Erro" logName)
                 (CLOSE logName)
               )
             )
@@ -145,7 +146,7 @@
         (IF dialogBox
           (PROGN
             (SETQ dialogBox nil)
-            (ALERT (STRCAT "\nPara finalizar sua configuração:"
+            (ALERT (STRCAT "Para finalizar sua configuração:"
                            "\n1 - Copie o caminho (com as aspas) presente na barra de comandos logo abaixo;"
                            "\n2 - Abra o arquivo \"" *scriptsMain* "\"; e"
                            "\n3 - Substitua o campo da pasta Autots \"*autotsFolder*\" com o caminho copiado.\n"

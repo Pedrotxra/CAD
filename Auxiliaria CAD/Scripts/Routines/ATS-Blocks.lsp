@@ -276,6 +276,7 @@
             ;; Seleção ordenada para manter a correspondência dos atributos
             (COMMAND-S "_.ZOOM" start end)
             (FOREACH entityName (ATS:SortSelectionByPosition (* *unitsFactor* 3.0) (SSGET "_C" start end (LIST (CONS 0 (STRCAT "LINE" (IF hatchesAreas ",HATCH" "") (IF textsDistances ",TEXT" ""))))))
+              (SETQ *iterationsCount* (1+ *iterationsCount*))
               (COND
                 ((EQ (ATS:GetPropertiesValues 0 entityName) "LINE")
                  (SETQ start (ATS:GetPropertiesValues 10 entityName))
@@ -326,6 +327,7 @@
     (PROGN
       (DEFUN ApplyToAllNestedItems (blockName)
         (VLAX-FOR item (ATS:SaveObject (VLA-ITEM blocksCollection blockName))
+          (SETQ *iterationsCount* (1+ *iterationsCount*))
           (ATS:SaveObject item)
           (IF (EQ (VLA-GET-ObjectName item) "AcDbBlockReference")
             (PROGN
@@ -346,6 +348,7 @@
     (VLAX-FOR block blocksCollection
       (ATS:SaveObject block)
       (VLAX-FOR item block
+        (SETQ *iterationsCount* (1+ *iterationsCount*))
         (ATS:SaveObject item)
         (APPLY (FUNCTION applyFunction) (LIST item))
       )
@@ -366,6 +369,7 @@
       (DEFUN *error* (errorMessage)
         (ATS:RestoreUsersPreferences commandName errorMessage)
       )
+      (SETQ *iterationsCount* 1)
       (COMMAND-S "_.COPYBASE" point selection "")
       (COMMAND-S "_.ERASE" selection "")
       (COMMAND-S "_.PASTEBLOCK" point)
@@ -421,6 +425,7 @@
       (DEFUN *error* (errorMessage)
         (ATS:RestoreUsersPreferences commandName errorMessage)
       )
+      (SETQ *iterationsCount* 1)
       (SETQ oldBlockName (ATS:GetEffectiveName (ATS:SaveObject entityName)))
       (SETQ newBlockName (ATS:NameTableUniquely "BLOCK" 1 oldBlockName))
       (COMMAND-S "_.-BEDIT" oldBlockName)
@@ -446,6 +451,7 @@
       (DEFUN *error* (errorMessage)
         (ATS:RestoreUsersPreferences commandName errorMessage)
       )
+      (SETQ *iterationsCount* 1)
       (ATS:ChangeBlockBasePoint translatePoint basePoint entityName)
       (ATS:RestoreUsersPreferences commandName nil)
     )
@@ -489,6 +495,7 @@
       (DEFUN *error* (errorMessage)
         (ATS:RestoreUsersPreferences commandName errorMessage)
       )
+      (SETQ *iterationsCount* 1)s
       (COMMAND-S "_.-RENAME" "_BLOCK" oldBlockName newBlockName)
       (ATS:RestoreUsersPreferences commandName nil)
     )
@@ -554,6 +561,7 @@
       (FOREACH blockName (VL-REMOVE-IF (FUNCTION (LAMBDA (blockName) (WCMATCH blockName "_*"))) blocksNames)
         (IF (SETQ blockPath (FINDFILE (STRCAT blockName ".dwg")))
           (PROGN
+            (SETQ *iterationsCount* (1+ *iterationsCount*))
             (COMMAND "_.-INSERT" (STRCAT blockName "=" blockPath) ^C^C)
             (COMMAND-S "_.ATTSYNC" "_NAME" blockName)
           )
@@ -599,17 +607,18 @@
       )
       ; Itera sobre os blocos, alterando propriedades de subentidades
       (VLAX-FOR block (ATS:SaveObject (VLA-GET-BLOCKS *activeDocument*))
+        (ATS:SaveObject block)
         (IF (AND (EQ (VLA-GET-ISLAYOUT block) :VLAX-FALSE)
                  (EQ (VLA-GET-ISXREF block) :VLAX-FALSE))
           (VLAX-FOR subEntity block
+            (SETQ *iterationsCount* (1+ *iterationsCount*))
+            (ATS:SaveObject subEntity)
             (VLA-PUT-LAYER subEntity "0")
             (VLA-PUT-COLOR subEntity acByLayer)
             (VLA-PUT-LINEWEIGHT subEntity acLnWtByLayer)
             (VLA-PUT-LINETYPE subEntity "ByLayer")
-            (ATS:SaveObject subEntity)
           )
         )
-        (ATS:SaveObject block)
       )
       (ATS:RestoreUsersPreferences commandName nil)
     )

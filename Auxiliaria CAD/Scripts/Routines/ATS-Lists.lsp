@@ -292,6 +292,18 @@
   (AND (APPLY (FUNCTION OR) items) (NOT (APPLY (FUNCTION AND) items)))
 )
 
+;| Arredonda um número para cima por um incremento específico
+   @global
+   @param number [real] - Número a ser arredondado
+   @param minimal [real] - Valor mínimo
+   @param increment [real] - Incremento
+   @returns [real] - Número arredondado
+   |;
+(DEFUN ATS:RoundUp (minimal increment number)
+  (SETQ number (/ (MAX 0 (- number minimal)) increment))
+  (+ minimal (* (+ (IF (EQ number (SETQ number (FIX number))) 0 1) number) increment))
+)
+
 ;| Converte uma lista em uma variant array
    @global
    @param ordinaryList [lst] - Lista a ser convertida
