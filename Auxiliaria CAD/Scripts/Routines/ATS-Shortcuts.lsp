@@ -59,7 +59,7 @@
    |;
 (DEFUN C:II (/ blockName layer insertionScaleFactor)
   (COND
-    ((NOT (SETQ blockName (GETSTRING "\nInsira o nome do bloco:\n"))) (PROMPT "\nNenhum nome foi inserido.\n"))
+    ((NOT (SETQ blockName (ATS:GetString 1 T nil "\nInsira o nome do bloco:\n"))) (PROMPT "\nNenhum nome foi inserido.\n"))
     ((NOT (SETQ blockName (ATS:PredictBlockName blockName))) (PROMPT "\nBloco não encontrado.\n"))
     (T
       (IF (EQ (TYPE blockName) (READ "SYM"))
@@ -81,6 +81,14 @@
       )
     )
   )
+)
+
+;| Atalho para 'OFFSET'
+   @returns nil
+   |;
+(DEFUN C:00 ()
+  (ATS:WriteLog "00" nil)
+  (COMMAND-S "_.OFFSET")
 )
 
 ;| Atalho para 'REVCLOUD'

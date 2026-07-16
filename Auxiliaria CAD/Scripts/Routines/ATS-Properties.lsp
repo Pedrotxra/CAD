@@ -182,10 +182,12 @@
    @global
    @returns [nil] - Limpa e audita o arquivo
    |;
-(DEFUN ATS:CleanFile ()
+(DEFUN ATS:CleanFile (audit)
   (COMMAND-S "_.-SCALELISTEDIT" "_DELETE" "*" "_EXIT")
   (REPEAT 5 (COMMAND-S "_.-PURGE" "_ALL" "*" "_NO"))
-  (COMMAND-S "_.AUDIT" "_YES")
+  (IF audit
+   (COMMAND-S "_.AUDIT" "_YES")
+  )
 )
 
 ;| Altera padrões em todos os espaços com base na inserção de um bloco
@@ -212,7 +214,7 @@
       )
     )
   )
-  (ATS:CleanFile)
+  (ATS:CleanFile T)
   (COMMAND "_.-INSERT" blockName ^C^C)
   (SETQ files (REVERSE files))
   (FOREACH file files
@@ -222,7 +224,7 @@
     (VL-FILE-DELETE file)
   )
   (ATS:SetSystemVariables nil *systemVariables*)
-  (ATS:CleanFile)
+  (ATS:CleanFile T)
 )
 
 ;| Desanexa referências externas
@@ -367,8 +369,19 @@
    @param systemVariables [lst] - Lista de variáveis do sistema a serem definidas
    @returns [nil] - Define as variáveis do sistema
    |;
-(DEFUN ATS:SetSystemVariables (nativeStandards systemVariables)
+(DEFUN ATS:SetSystemVariables (nativeStandards systemVariables / display)
   (ATS:DeleteEmptyLayouts)
+  ;; Define a visualização do Layout
+  (SETQ display (ATS:SaveObject (VLA-GET-DISPLAY (ATS:SaveObject (VLA-GET-PREFERENCES *acadObject*)))))
+  (VLA-PUT-GraphicsWinLayoutBackgrndColor display (VLA-GET-GraphicsWinModelBackgrndColor display)) ; Define a cor de fundo do layout como a cor de fundo do modelo
+  (VLA-PUT-LayoutCrosshairColor display (VLA-GET-ModelCrosshairColor display))
+  (VLA-PUT-LayoutDisplayMargins display :VLAX-FALSE)
+  (VLA-PUT-LayoutDisplayPaper display :VLAX-FALSE)
+  (VLA-PUT-LayoutDisplayPaperShadow display :VLAX-FALSE)
+  (VLA-PUT-LayoutShowPlotSetup display :VLAX-FALSE)
+  (VLA-PUT-LayoutCreateViewport display :VLAX-FALSE) ; Cria uma viewport nova ao criar um layout
+  ;(SETVAR "ISAVEBAK" 0) ; Desativa a criação de arquivos de backup
+  ;; Define as variáveis do sistema
   (FOREACH systemVariable systemVariables
     (VL-CATCH-ALL-APPLY (FUNCTION SETVAR) (MAPCAR (FUNCTION EVAL) systemVariable))
   )
@@ -624,7 +637,7 @@
       (SETQ namesList (VL-REMOVE "0" (VL-REMOVE "Defpoints" namesList)))
     )
     ((EQ tableName "BLOCK")
-      (SETQ namesList (VL-REMOVE "_Dot" (VL-REMOVE "_DOTSMALL" namesList)))
+      (SETQ namesList (VL-REMOVE-IF (FUNCTION (LAMBDA (blockName) (WCMATCH blockName "_Dot,_DOTSMALL,`**"))) namesList))
     )
   )
   ;; Se o afixo for um inteiro, seu acréscimo único será somando 1
@@ -809,7 +822,7 @@
 (DEFUN C:LIMPA ()
   (ATS:WriteLog "LIMPA" nil)
   (ATS:RemoveDots nil)
-  (ATS:CleanFile)
+  (ATS:CleanFile T)
 )
 
 ;| Conserta padrões em layouts e blocos
@@ -841,7 +854,8 @@
                                                                      (CONS "Thickness" 0.0)
                                                                      (CONS "Material" "ByLayer"))
                                          (IF (VLAX-PROPERTY-AVAILABLE-P item (CAR property-value))
-                                           (VLAX-PUT-PROPERTY item (CAR property-value) (CDR property-value))))))
+                                           (VLAX-PUT-PROPERTY item (CAR property-value) (CDR property-value))
+                                           (SETQ *iterationsCount* (1- *iterationsCount*))))))
       ;; Itera todos os layouts
       (FOREACH layout (CONS "Model" (LAYOUTLIST))
         (COMMAND-S "_.-LAYOUT" "_SET" layout)

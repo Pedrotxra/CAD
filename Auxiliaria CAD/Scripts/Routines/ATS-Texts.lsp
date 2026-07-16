@@ -168,7 +168,7 @@
                    ((GETKWORD (STRCAT message "[" (ATS:ListToString "/" keywordsList) "]<" defaultAnswer ">")))
                    (defaultAnswer)))
     (IF (COND
-          ;; Verifica se a resposta foi uma das opções de navegação
+          ;; Verifica se a resposta foi uma das opções
           ((EQ (STRCASE answer) (STRCASE *previousKeywordSublist*))
             ;; Verifica se está em uma sublista menor
             (IF minorPosition
@@ -237,6 +237,25 @@
   ;; Busca a palavra-chave pela entrada original
   (SETQ answer (STRCASE answer))
   (VL-SOME (FUNCTION (LAMBDA (keyword) (IF (EQ answer (STRCASE (ATS:ReplaceAllInString "" " " keyword))) keyword))) keywords)
+)
+
+;| Obtém uma string do usuário
+   @global
+   @param bits [int] - Máscara de bits para o comportamento da função
+   @param space [bool] - 'T' se a string pode conter espaços
+   @param defaultAnswer [str] - Resposta padrão
+   @param message [str] - Mensagem a ser exibida ao usuário
+   @returns [str] - String introduzida pelo usuário
+   |;
+(DEFUN ATS:GetString (bits space defaultAnswer message)
+  (IF (EQ (TYPE bits) (READ "INT"))
+    (INITGET bits)
+  )
+  (SETQ message (GETSTRING space (STRCAT message (IF defaultAnswer (STRCAT "<" defaultAnswer ">") ""))))
+  (IF (> (STRLEN message) 0)
+    message
+    defaultAnswer
+  )
 )
 
 ;| Ordena alfanumericamente uma lista de strings
@@ -593,8 +612,8 @@
     )
   )
   (COND
-    ((NOT (SETQ *prefix* (COND ((GETSTRING T (STRCAT "\nInsira o PREFIXO do texto: <" *prefix* ">\n"))) (*prefix*)))) (PROMPT "\nPrefixo inválido.\n"))
-    ((NOT (SETQ *suffix* (COND ((GETSTRING T (STRCAT "\nInsira o SUFIXO do texto: <" *suffix* ">\n"))) (*suffix*)))) (PROMPT "\nSufixo inválido.\n"))
+    ((NOT (SETQ *prefix* (ATS:GetString nil T *prefix* "\nInsira o PREFIXO do texto:\n"))) (PROMPT "\nPrefixo inválido.\n"))
+    ((NOT (SETQ *suffix* (ATS:GetString nil T *suffix* "\nInsira o SUFIXO do texto:\n"))) (PROMPT "\nSufixo inválido.\n"))
     ((NOT (SETQ *startNumber* (COND ((GETINT (STRCAT "\nInsira o NÚMERO INICIAL: <" (ITOA *startNumber*) ">\n"))) (*startNumber*)))) (PROMPT "\nNúmero inicial inválido.\n"))
     ((NOT (SETQ *increment* (COND ((GETINT (STRCAT "\nInsira o INCREMENTO: <" (ITOA *increment*) ">\n"))) (*increment*)))) (PROMPT "\nIncremento inválido.\n"))
     ((NOT (SETQ textEntity (ATS:GetKeyword "Sim" (LIST "Sim" "Não") "\nDeseja selecionar todos os textos de uma vez?\n"))) (PROMPT "\nResposta inválida.\n"))

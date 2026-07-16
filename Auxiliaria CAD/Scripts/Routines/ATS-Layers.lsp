@@ -222,7 +222,7 @@
    @returns nil
    |;
 (DEFUN C:LL ()
-  (ATS:WriteLog "AL" nil)
+  (ATS:WriteLog "LL" nil)
   (ATS:ActivateLayers)
   (SETQ *extendedDeactivatedLayers* *deactivatedLayers*)
   (SETQ *deactivatedLayers* nil)
@@ -307,7 +307,7 @@
    @returns nil
    |;
 (DEFUN C:0 ()
-  (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
+  (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
   (ATS:WriteLog "0" nil)
   (ATS:ChangeLayer "0")
 )
@@ -317,7 +317,7 @@
      @returns nil
      |;
   (DEFUN C:1 ()
-    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
+    (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
     (ATS:WriteLog "1" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *pen1*))
   )
@@ -328,7 +328,7 @@
      @returns nil
      |;
   (DEFUN C:2 ()
-    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
+    (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
     (ATS:WriteLog "2" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *pen2*))
   )
@@ -339,7 +339,7 @@
      @returns nil
      |;
   (DEFUN C:3 ()
-    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
+    (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
     (ATS:WriteLog "3" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *pen3*))
   )
@@ -350,7 +350,7 @@
      @returns nil
      |;
   (DEFUN C:4 ()
-    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
+    (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
     (ATS:WriteLog "4" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *pen4*))
   )
@@ -361,7 +361,7 @@
      @returns nil
      |;
   (DEFUN C:5 ()
-    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
+    (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
     (ATS:WriteLog "5" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *pen5*))
   )
@@ -372,7 +372,7 @@
      @returns nil
      |;
   (DEFUN C:6 ()
-    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
+    (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
     (ATS:WriteLog "6" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *pen6*))
   )
@@ -383,7 +383,7 @@
      @returns nil
      |;
   (DEFUN C:S1 ()
-    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
+    (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
     (ATS:WriteLog "S1" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *symbolPen1*))
   )
@@ -394,7 +394,7 @@
      @returns nil
      |;
   (DEFUN C:S2 ()
-    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
+    (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
     (ATS:WriteLog "S2" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *symbolPen2*))
   )
@@ -405,7 +405,7 @@
      @returns nil
      |;
   (DEFUN C:S3 ()
-    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
+    (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
     (ATS:WriteLog "S3" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *symbolPen3*))
   )
@@ -416,7 +416,7 @@
      @returns nil
      |;
   (DEFUN C:S4 ()
-    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
+    (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
     (ATS:WriteLog "S4" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *symbolPen4*))
   )
@@ -427,7 +427,7 @@
      @returns nil
      |;
   (DEFUN C:S5 ()
-    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
+    (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
     (ATS:WriteLog "S5" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *symbolPen5*))
   )
@@ -438,7 +438,7 @@
      @returns nil
      |;
   (DEFUN C:S6 ()
-    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
+    (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
     (ATS:WriteLog "S6" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *symbolPen6*))
   )
@@ -449,9 +449,20 @@
      @returns nil
      |;
   (DEFUN C:PROJ ()
-    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
+    (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
     (ATS:WriteLog "PROJ" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *projectionLayer*))
+  )
+)
+
+(IF *sectionLayer*
+  ;| Muda para o layer de corte
+     @returns nil
+     |;
+  (DEFUN C:CRT ()
+    (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
+    (ATS:WriteLog "CRT" nil)
+    (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *sectionLayer*))
   )
 )
 
@@ -460,7 +471,7 @@
      @returns nil
      |;
   (DEFUN C:AREAS ()
-    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
+    (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
     (ATS:WriteLog "AREAS" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *areaLayer*))
   )
@@ -471,7 +482,7 @@
      @returns nil
      |;
   (DEFUN C:FOR ()
-    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
+    (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
     (ATS:WriteLog "FOR" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *falseCeilingLayer*))
   )
@@ -482,7 +493,7 @@
      @returns nil
      |;
   (DEFUN C:ARQ ()
-    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
+    (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
     (ATS:WriteLog "ARQ" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *architectureLayer*))
   )
@@ -493,7 +504,7 @@
      @returns nil
      |;
   (DEFUN C:EST ()
-    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
+    (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
     (ATS:WriteLog "EST" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *structureLayer*))
   )
@@ -504,7 +515,7 @@
      @returns nil
      |;
   (DEFUN C:LAY ()
-    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
+    (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
     (ATS:WriteLog "LAY" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *layoutLayer*))
   )
@@ -515,7 +526,7 @@
      @returns nil
      |;
   (DEFUN C:ELE ()
-    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
+    (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
     (ATS:WriteLog "ELE" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *electricalLayer*))
   )
@@ -526,7 +537,7 @@
      @returns nil
      |;
   (DEFUN C:INC ()
-    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
+    (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
     (ATS:WriteLog "INC" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *fireLayer*))
   )
@@ -537,7 +548,7 @@
      @returns nil
      |;
   (DEFUN C:HID ()
-    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
+    (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
     (ATS:WriteLog "HID" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *plumbingLayer*))
   )
@@ -548,7 +559,7 @@
      @returns nil
      |;
   (DEFUN C:LUM ()
-    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
+    (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
     (ATS:WriteLog "LUM" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *lightingLayer*))
   )
@@ -559,7 +570,7 @@
      @returns nil
      |;
   (DEFUN C:TRA ()
-    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
+    (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
     (ATS:WriteLog "TRA" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *trafficLayer*))
   )
@@ -570,7 +581,7 @@
      @returns nil
      |;
   (DEFUN C:VEG ()
-    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
+    (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
     (ATS:WriteLog "VEG" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *vegetationLayer*))
   )
@@ -581,7 +592,7 @@
      @returns nil
      |;
   (DEFUN C:TER ()
-    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
+    (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
     (ATS:WriteLog "TER" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *siteLayer*))
   )
@@ -592,7 +603,7 @@
      @returns nil
      |;
   (DEFUN C:CONS ()
-    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
+    (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
     (ATS:WriteLog "CONS" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *constructionLayer*))
   )
@@ -603,7 +614,7 @@
      @returns nil
      |;
   (DEFUN C:DEM ()
-    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
+    (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
     (ATS:WriteLog "DEM" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *demolitionLayer*))
   )
@@ -615,7 +626,7 @@
       @returns nil
       |;
     (DEFUN C:CORR ()
-      (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
+      (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
       (ATS:WriteLog "CORR" nil)
       (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *handrailLayer*))
     )
@@ -623,6 +634,7 @@
       @returns nil
       |;
     (DEFUN C:CORRINC (/ layerName layer standardColor)
+      (SETQ *iterationsCount* 1)
       (ATS:WriteLog "CORRINC" nil)
       (SETQ layerName (ATS:EvaluateStringSymbolList *handrailLayer*))
       (IF (SETQ layer (TBLOBJNAME "LAYER" layerName))
@@ -644,7 +656,7 @@
      @returns nil
      |;
   (DEFUN C:RAS ()
-    (SETQ *iterationsCount* (SSLENGTH (COND (SSGET "_I") ((SSADD)))))
+    (SETQ *iterationsCount* (SSLENGTH (COND ((SSGET "_I")) ((SSADD)))))
     (ATS:WriteLog "RAS" nil)
     (ATS:ChangeLayer (ATS:EvaluateStringSymbolList *draftLayer*))
   )

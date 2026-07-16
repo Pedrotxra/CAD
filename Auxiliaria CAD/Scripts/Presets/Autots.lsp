@@ -44,6 +44,7 @@
                                   (CONS "A0 Estendido" (LIST -155.9 84.1))
                                   (CONS "A0" (LIST -118.9 84.1))
                                   (CONS "A1 Estendido" (LIST -118.9 59.4))
+                                  (CONS "A1 Alongado" (LIST -102.5 59.4))
                                   (CONS "A1" (LIST -84.1 59.4))
                                   (CONS "A2" (LIST -59.4 42.0))
                                   (CONS "A3" (LIST -42.0 29.7))
@@ -161,11 +162,11 @@
 (SETQ *symbolTag* "SIM")
 (SETQ *furnitureTag* "LAY")
 (SETQ *vegetationTag* "VEG")
-(SETQ *lightingTag* "LUM")
 (SETQ *fireTag* "INC")
 (SETQ *mechanicalTag* "MEC")
 (SETQ *electricalTag* "ELE")
 (SETQ *plumbingTag* "HID")
+(SETQ *lightingTag* "LUM")
 
 ;;; Plot
 (SETQ *standardLineTypeScale* 1.0)
@@ -187,7 +188,7 @@
 (SETQ *symbolPen5*            (LIST (QUOTE *standardPrefix*) (QUOTE *affixSeparator*) "Símbolo 5"))
 (SETQ *symbolPen6*            (LIST (QUOTE *standardPrefix*) (QUOTE *affixSeparator*) "Símbolo 6"))
 (SETQ *dimensionLayer*        (LIST (QUOTE *standardPrefix*) (QUOTE *affixSeparator*) "Cotas"))
-(SETQ *axisLayer*             (LIST (QUOTE *standardPrefix*) (QUOTE *affixSeparator*) "Eixos"))
+(SETQ *sectionLayer*          (LIST (QUOTE *standardPrefix*) (QUOTE *affixSeparator*) "Cortes"))
 (SETQ *projectionLayer*       (LIST (QUOTE *standardPrefix*) (QUOTE *affixSeparator*) "Projeções"))
 (SETQ *hatchLayer*            (LIST (QUOTE *standardPrefix*) (QUOTE *affixSeparator*) "Hachuras"))
 (SETQ *solidLayer*            (LIST (QUOTE *standardPrefix*) (QUOTE *affixSeparator*) "Sólidos"))
@@ -216,14 +217,16 @@
 ;; Lista de prioridade de layers, do mais prioritário, ao menos, dividida entre layers de anotação e de desenho
 (SETQ *layersDrawOrderList*
   (LIST
-    (LIST ; Layers de anotação e rascunho
-      "0" (QUOTE *draftLayer*) (QUOTE *viewportLayer*) (QUOTE *areaLayer*)
-      (QUOTE *axisLayer*) (QUOTE *dimensionLayer*) (QUOTE *symbolPen6*) (QUOTE *symbolPen5*) (QUOTE *symbolPen4*) (QUOTE *symbolPen3*) (QUOTE *symbolPen2*) (QUOTE *symbolPen1*)
+    (LIST ; Layers de anotação e auxiliares
+      "0" (QUOTE *draftLayer*) (QUOTE *areaLayer*)
+      (QUOTE *sectionLayer*) (QUOTE *dimensionLayer*) (QUOTE *symbolPen6*) (QUOTE *symbolPen5*) (QUOTE *symbolPen4*) (QUOTE *symbolPen3*) (QUOTE *symbolPen2*) (QUOTE *symbolPen1*)
+      (QUOTE *viewportLayer*)
     )
     (LIST ; Layers de desenho
       (QUOTE *projectionLayer*) (QUOTE *structureLayer*) (QUOTE *constructionLayer*) (QUOTE *demolitionLayer*)
-      (QUOTE *pen6*) (QUOTE *pen5*) (QUOTE *pen4*) (QUOTE *pen3*) (QUOTE *pen2*) (QUOTE *pen1*) (QUOTE *handrailLayer*) (QUOTE *siteLayer*) (QUOTE *layoutLayer*) (QUOTE *vegetationLayer*) (QUOTE *trafficLayer*)
-      (QUOTE *fireLayer*) (QUOTE *lightingLayer*) (QUOTE *electricalLayer*) (QUOTE *plumbingLayer*) (QUOTE *falseCeilingLayer*)
+      (QUOTE *fireLayer*) (QUOTE *mechanicalLayer*) (QUOTE *electricalLayer*) (QUOTE *plumbingLayer*) (QUOTE *lightingLayer*)
+      (QUOTE *handrailLayer*) (QUOTE *layoutLayer*) (QUOTE *vegetationLayer*) (QUOTE *trafficLayer*) (QUOTE *falseCeilingLayer*) (QUOTE *siteLayer*)
+      (QUOTE *pen6*) (QUOTE *pen5*) (QUOTE *pen4*) (QUOTE *pen3*) (QUOTE *pen2*) (QUOTE *pen1*)
       (QUOTE *hatchLayer*) (QUOTE *solidLayer*) (QUOTE *wipeoutLayer*)
     )
   )
@@ -482,8 +485,8 @@
                                               ((NOT (SETQ point2 (GETPOINT point1 "\nSelecione a segunda extremidade.\n"))) (PROMPT "\nNenhum ponto selecionado.\n"))
                                               ((NOT (SETQ point3 (GETPOINT (SETQ basePoint (ATS:GetPointsMiddle (LIST point1 point2))) "\nInsira a profundidade do corte.\n"))) (PROMPT "\nNenhum ponto selecionado.\n"))
                                               (T
-                                                (SETQ startName (GETSTRING "\nInsira o ínicio do nome do corte: <->\n"))
-                                                (SETQ endName (GETSTRING "\nInsira o final do nome do corte: <->\n"))
+                                                (SETQ startName (ATS:GetString nil nil "-" "\nInsira o ínicio do nome do corte:\n"))
+                                                (SETQ endName (ATS:GetString nil nil "-" "\nInsira o final do nome do corte:\n"))
                                                 (ATS:SaveUsersPreferences 7)
                                                 (DEFUN *error* (errorMessage)
                                                   (ATS:RestoreUsersPreferences commandName errorMessage)
@@ -501,10 +504,10 @@
                                                   (ATS:ChangeDynamicBlockPropertiesValues nil (ATS:SaveObject blockName) (LIST (CONS (ATS:GetPropertiesValues "FlipPropertyName" *sectionBlockList*) (VLAX-MAKE-VARIANT 1 VLAX-VBINTEGER))))
                                                 )
                                                 (ATS:ChangeDynamicBlockPropertiesValues nil (ATS:SaveObject blockName) (LIST (CONS (ATS:GetPropertiesValues "LengthPropertyName" *sectionBlockList*) sectionLength) (CONS (ATS:GetPropertiesValues "RangePropertyName" *sectionBlockList*) (MAX (ABS sectionAngle) (* (ATS:GetInsertionScale) 5.0)))))
-                                                (IF (> (STRLEN startName) 0)
+                                                (IF startName
                                                   (ATS:ChangePropertiesValues (ATS:SearchAttribute nil blockName (LIST (CONS 2 (ATS:GetPropertiesValues "StartNameAttributeName" *sectionBlockList*)))) (LIST (CONS 1 (STRCASE startName))))
                                                 )
-                                                (IF (> (STRLEN endName) 0)
+                                                (IF endName
                                                   (ATS:ChangePropertiesValues (ATS:SearchAttribute nil blockName (LIST (CONS 2 (ATS:GetPropertiesValues "EndNameAttributeName" *sectionBlockList*)))) (LIST (CONS 1 (STRCASE endName))))
                                                 )
                                                 (ATS:RestoreUsersPreferences commandName nil)))))))
@@ -652,6 +655,41 @@
                          (CONS "LevelAttributeName" "NÍVEL")
                          (CONS "Level2AttributeName" "NÍVEL2")))
 
+(SETQ *viewportBlockList* (LIST (CONS "Name" (STRCAT *standardPrefix* *affixSeparator* "Viewport"))
+                                (CONS "Layer" (QUOTE *viewportLayer*))
+                                (CONS "HorizontalDistancePropertyName" "Comprimento Horizontal")
+                                (CONS "VerticalDistancePropertyName" "Comprimento Vertical")
+                                (CONS "DrawingNameAttributeName" "NOME")
+                                (CONS "Insert" (LAMBDA (/ blockName point1 point2 drawingName basePoint object)
+                                                 (COND
+                                                   ;; Insere o bloco no arquivo
+                                                   ((NOT (ATS:InsertBlockFromSupportPaths (SETQ blockName (ATS:GetPropertiesValues "Name" *viewportBlockList*)))) (PROMPT "\nBloco não encontrado.\n"))
+                                                   ;; Solicita as extremidades do retângulo
+                                                   ((NOT (SETQ point1 (GETPOINT "\nSelecione a primeira extremidade.\n"))) (PROMPT "\nNenhum ponto selecionado.\n"))
+                                                   ((NOT (SETQ point2 (GETCORNER point1 "\nSelecione a segunda extremidade.\n"))) (PROMPT "\nNenhum ponto selecionado.\n"))
+                                                   (T
+                                                     ;; Solicita o nome do desenho
+                                                     (SETQ drawingName (ATS:GetString nil T "PLANTA" "\nInsira o nome do desenho:\n"))
+                                                     ;; Obtém o ponto base e escala de inserção
+                                                     (SETQ basePoint (ATS:GetPointsMiddle (LIST point1 point2)))
+                                                     (SETQ scale (ATS:GetInsertionScale))
+                                                     ;; Insere o bloco
+                                                     (COMMAND-S "_.-INSERT" blockName basePoint scale "0")
+                                                     (SETQ blockName (ENTLAST))
+                                                     (SETQ object (ATS:SaveObject blockName))
+                                                     ;; Acrescenta a escala anotativa, se necessário
+                                                     (IF (EQ (TYPE *scaleFactor*) (READ "STR"))
+                                                       (ATS:ApplyScaleFactor (SSADD blockName) *scaleFactor*)
+                                                     )
+                                                     ;; Ajusta o tamanho do retângulo
+                                                     (ATS:ChangeDynamicBlockPropertiesValues nil object (LIST (CONS (ATS:GetPropertiesValues "HorizontalDistancePropertyName" *viewportBlockList*) (ABS (- (CAR point2) (CAR point1))))
+                                                                                                              (CONS (ATS:GetPropertiesValues "VerticalDistancePropertyName" *viewportBlockList*) (SETQ point2 (ABS (- (CADR point2) (CADR point1)))))))
+                                                     ;; Ajusta o ponto de inserção e layer
+                                                     (ATS:ChangePropertiesValues blockName (LIST (CONS 10 basePoint)
+                                                                                                 (CONS 8 (ATS:EvaluateStringSymbolList (ATS:GetPropertiesValues "Layer" *viewportBlockList*)))))
+                                                     ;; Introduz o nome do desenho
+                                                     (ATS:ChangePropertiesValues (ATS:SearchAttribute nil blockName (LIST (CONS 2 (ATS:GetPropertiesValues "DrawingNameAttributeName" *viewportBlockList*)))) (LIST (CONS 1 (STRCASE drawingName))))))))))
+
 ;; Lista de carimbos
 (SETQ *titleBlockBlockList* (LIST
                               (CONS "Name" (STRCAT *standardPrefix* *affixSeparator* "Carimbo"))
@@ -714,7 +752,8 @@
                                (CONS "NI" (QUOTE *levelBlockList*))
                                (CONS "PO" (QUOTE *doorBlockList*))
                                (CONS "TAN" (STRCAT *standardPrefix* *affixSeparator* "Tanque"))
-                               (CONS "T" (QUOTE *titleBlockList*))))
+                               (CONS "TIT" (QUOTE *titleBlockList*))
+                               (CONS "VV" (QUOTE *viewportBlockList*))))
 
 ;;; Rotinas personalizadas
 ;| Avalia símbolos em seus valores armazenados e concatena recursivamente todas as strings

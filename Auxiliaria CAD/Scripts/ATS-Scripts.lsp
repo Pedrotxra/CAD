@@ -56,7 +56,7 @@
     (ALERT (STRCAT "Erro ao carregar: " (ATS:ListToString ", " (REVERSE *failedLoads*))))
     (PROGN
       ;; Configura o CAD
-      (ATS:SetPaths *sharedFolders* *automaticCADConfig*)
+      (ATS:SetPaths *sharedFolders*)
       (IF *automaticCADConfig*
         (ATS:SetSystemVariables nil *systemVariables*)
       )
@@ -96,7 +96,10 @@
         (VL-CATCH-ALL-APPLY (FUNCTION VL-CATCH-ALL-APPLY) (LIST (FUNCTION ACET-LOAD-EXPRESSTOOLS)))
         ;; Carrega o preset Autots para carregar as demais rotinas
         (IF (VL-CATCH-ALL-ERROR-P (VL-CATCH-ALL-APPLY (FUNCTION LOAD) (LIST (STRCAT *autotsFolder* "CAD\\Auxiliaria CAD\\Scripts\\Presets\\Autots.lsp"))))
-          (ALERT "Erro ao carregar: Autots.lsp")
+          (PROGN
+            (SETQ *failedLoads* (CONS "Autots.lsp" *failedLoads*))
+            (ALERT "Erro ao carregar: Autots.lsp")
+          )
           (PROGN
             (IF (NOT (AND ;; Se o preset estiver definido como automático, procura, no nome do arquivo, o nome de algum preset
                        (EQ *preset* T)
@@ -121,7 +124,7 @@
             ;; Carrega as rotinas e o preset padrão
             (ATS:LoadScripts *preset*)
             ;; Cria o arquivo de log
-            (SETQ *loginName* (ATS:FixLoginName *loginName*))
+            (SETQ *loginName* (ATS:FixLoginName (GETVAR "LOGINNAME")))
             (SETQ logName (ATS:EvaluateStringSymbolList (APPEND *scriptsLogFolder* *scriptsLog*)))
             (IF (NOT (FINDFILE logName))
               (PROGN

@@ -329,9 +329,11 @@
         (VLAX-FOR item (ATS:SaveObject (VLA-ITEM blocksCollection blockName))
           (SETQ *iterationsCount* (1+ *iterationsCount*))
           (ATS:SaveObject item)
+          ;; Aplica a função para bloco aninhados
           (IF (EQ (VLA-GET-ObjectName item) "AcDbBlockReference")
             (PROGN
               (SETQ blockName (VLAX-GET-PROPERTY item "EffectiveName"))
+              ;; Verifica se o bloco já foi iterado
               (IF (NOT (MEMBER blockName blocksList))
                 (PROGN
                   (ApplyToAllNestedItems blockName)
@@ -345,6 +347,7 @@
       )
       (ApplyToAllNestedItems blockName)
     )
+    ;; Aplica a função para todos os blocos do arquivo
     (VLAX-FOR block blocksCollection
       (ATS:SaveObject block)
       (VLAX-FOR item block
@@ -393,7 +396,7 @@
                                                                                                                                  ;; Solicita ao usuário o nome do bloco
                                                                                                                                  (EQ (SETQ blockName (ATS:GetKeyword (IF (VL-SOME (FUNCTION (LAMBDA (keyword) (EQ (STRCASE (ATS:TrimSuffix (ATS:ReplaceAllInString "" " " blockProperties))) (STRCASE (ATS:TrimSuffix keyword))))) (VL-REMOVE blockProperties (MAPCAR (FUNCTION (LAMBDA (keyword) (ATS:ReplaceAllInString "" " " keyword))) blockName))) blockProperties "Inserir") (CONS "Inserir" blockName) "\nSelecione o nome do bloco, ou 'Inserir' para introduzir manualmente:\n")) "Inserir"))
                                                                                                                           ;; Se não tiver prefixo em comum, ou o usuário optar por inserir manualmente
-                                                                                                                          (COND ((GETSTRING T (STRCAT "\nInsira o nome do bloco: <" blockProperties ">\n"))) (blockProperties))
+                                                                                                                          (ATS:GetString nil T blockProperties (STRCAT "\nInsira o nome do bloco:\n"))
                                                                                                                           blockName)))))
                                                             (PROGN
                                                               (SETQ layer (ATS:EvaluateStringSymbolList (ATS:GetPropertiesValues "Layer" blockProperties)))
@@ -488,14 +491,17 @@
     ((NOT (SETQ entityName (ATS:SelectSingleObject (LIST (CONS 0 "INSERT"))))) (PROMPT "\nNenhum bloco selecionado.\n"))
     ((PROGN
        (SETQ oldBlockName (ATS:GetEffectiveName (ATS:SaveObject entityName)))
-       (NOT (SETQ newBlockName (GETSTRING T (STRCAT "\nInsira o novo nome: <" oldBlockName ">\n"))))) (PROMPT "\nNenhum nome inserido.\n"))
+       (EQ (STRLEN (SETQ newBlockName (GETSTRING T (STRCAT "\nInsira o novo nome:\n<" oldBlockName ">")))) 0)) (PROMPT "\nNenhum nome inserido.\n"))
     ((EQ oldBlockName newBlockName) (PROMPT "\nO nome do bloco não foi alterado.\n"))
+    ((IF (TBLOBJNAME "BLOCK" newBlockName)
+       (NOT (IF (ATS:GetKeyword "Sim" (LIST "Sim" "Não") "\nNome do bloco já existente. Deseja acrescentar um sufixo sequencial?\n")
+              (SETQ newBlockName (ATS:NameTableUniquely "BLOCK" 1 newBlockName))))) (PROMPT "\nNão foi possível renomear para um nome de bloco já existente.\n"))
     (T
       (ATS:SaveUsersPreferences nil)
       (DEFUN *error* (errorMessage)
         (ATS:RestoreUsersPreferences commandName errorMessage)
       )
-      (SETQ *iterationsCount* 1)s
+      (SETQ *iterationsCount* 1)
       (COMMAND-S "_.-RENAME" "_BLOCK" oldBlockName newBlockName)
       (ATS:RestoreUsersPreferences commandName nil)
     )
@@ -509,9 +515,9 @@
   (SETQ commandName "RBS")
   (COND
     ((NOT (SETQ affixPosition (ATS:GetKeyword "Sufixo" (LIST "Prefixo" "Sufixo") "\nDeseja acrescentar prefixo ou sufixo aos blocos?\n"))) (PROMPT "\nNenhum afixo foi especificado.\n"))
-    ((NOT (SETQ affix (GETSTRING T (STRCAT "\nInsira o " (STRCASE affixPosition T) ":<" (IF (EQ affixPosition "Prefixo") *standardPrefix* "Obsoleto") ">\n")))) (PROMPT (STRCAT "\nNenhum " (STRCASE affixPosition T) " foi especificado.\n")))
+    ((NOT (SETQ affix (ATS:GetString nil T (IF (EQ affixPosition "Prefixo") *standardPrefix* "Obsoleto") (STRCAT "\nInsira o " (STRCASE affixPosition T) ":\n")))) (PROMPT (STRCAT "\nNenhum " (STRCASE affixPosition T) " foi especificado.\n")))
     ((AND (EQ affix "") (NOT (SETQ affix (IF (EQ affixPosition "Prefixo") *standardPrefix* "Obsoleto")))))
-    ((NOT (IF (EQ (ATS:GetKeyword "Não" (LIST "Sim" "Não") "\nDeseja aplicar em todos os blocos do arquivo?\n") "Não") (SETQ selection (SSGET (LIST (CONS 0 "INSERT")))))) (PROMPT "\nNenhum bloco foi selecionado.\n"))
+    ((IF (EQ (ATS:GetKeyword "Não" (LIST "Sim" "Não") "\nDeseja aplicar em todos os blocos do arquivo?\n") "Não") (NOT (SETQ selection (SSGET (LIST (CONS 0 "INSERT")))))) (PROMPT "\nNenhum bloco foi selecionado.\n"))
     (T
       (ATS:SaveUsersPreferences nil)
       (DEFUN *error* (errorMessage)

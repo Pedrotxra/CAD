@@ -40,7 +40,8 @@
       ;; Exclui cotas dentro dos blocos de arquitetura
       (SETQ deleteDimension (LAMBDA (dimension / backgroundColor)
                           (IF (WCMATCH (VLA-GET-ObjectName dimension) "AcDbRotatedDimension,AcDbAlignedDimension,AcDb2LineAngularDimension,AcDbArcDimension,AcDbRadialDimension,AcDbDiametricDimension")
-                            (VLA-DELETE dimension))))
+                            (VLA-DELETE dimension)
+                          (SETQ *iterationsCount* (1- *iterationsCount*)))))
       (SETQ count (SSLENGTH selection))
       (REPEAT count
         (SETQ count (1- count))

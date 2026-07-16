@@ -62,7 +62,7 @@
    |;
 (DEFUN ATS:ChangeSelectionProperties (selection property-valueList / count entityName)
   (SETQ count (SSLENGTH selection))
-  (SETQ *iterationsCount* (+ count *iterationsCount*))
+  (SETQ *iterationsCount* (+ count (COND (*iterationsCount*) (0))))
   (REPEAT count
     (SETQ count (1- count))
     (SETQ entityName (SSNAME selection count))
@@ -390,7 +390,7 @@
 (DEFUN C:FNB (/ *error* commandName usersMessage searchValue selection)
   (SETQ commandName "FNB")
   (COND
-    ((NOT (SETQ searchValue (PROGN (INITGET 1) (GETSTRING T "\nInsira o trecho a ser contido no nome do bloco:\n")))) (PROMPT "\nO trecho não foi introduzido.\n"))
+    ((NOT (SETQ searchValue (ATS:GetString 1 T nil "\nInsira o trecho a ser contido no nome do bloco:\n"))) (PROMPT "\nO trecho não foi introduzido.\n"))
     (T
       (ATS:SaveUsersPreferences nil)
       (DEFUN *error* (/ message)
@@ -415,7 +415,7 @@
 (DEFUN C:FNH (/ *error* commandName usersMessage selection)
   (SETQ commandName "FNH")
   (COND
-    ((NOT (SETQ selection (PROGN (INITGET 1) (GETSTRING T "\nInsira o trecho a ser contido no nome da hachura:\n")))) (PROMPT "\nO trecho não foi introduzido.\n"))
+    ((NOT (SETQ selection (ATS:GetString 1 T nil "\nInsira o trecho a ser contido no nome da hachura:\n"))) (PROMPT "\nO trecho não foi introduzido.\n"))
     (T
       (ATS:SaveUsersPreferences nil)
       (DEFUN *error* (/ message)
@@ -439,7 +439,7 @@
 (DEFUN C:FNL (/ *error* commandName usersMessage selection)
   (SETQ commandName "FNL")
   (COND
-    ((NOT (SETQ selection (PROGN (INITGET 1) (GETSTRING T "\nInsira o trecho a ser contido no nome do layer:\n")))) (PROMPT "\nO trecho não foi introduzido.\n"))
+    ((NOT (SETQ selection (ATS:GetString 1 T nil "\nInsira o trecho a ser contido no nome do layer:\n"))) (PROMPT "\nO trecho não foi introduzido.\n"))
     (T
       (ATS:SaveUsersPreferences nil)
       (DEFUN *error* (/ message)

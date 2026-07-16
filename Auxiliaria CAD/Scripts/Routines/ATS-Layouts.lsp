@@ -66,23 +66,50 @@
 ;| Obtém o contorno de uma folha
    @global
    @param sheetEntityName [ename] - Nome da entidade da folha
-   @returns [lst] - Lista com os pontos mínimo e máximo
+   @returns [lst] - Ponto máximo
    |;
-(DEFUN ATS:GetSheetBoundaries (sheetEntityName / bottom top xBottom yBottom xTop yTop)
+(DEFUN ATS:GetSheetBoundaries (sheetEntityName)
   (SETQ bottom (ATS:GetPropertiesValues 10 sheetEntityName))
   (SETQ top (CDR (ASSOC (ATS:GetSheetSize sheetEntityName) *sheetsSizes*)))
-  (SETQ top (IF top
-              (ATS:TranslatePoint bottom (MAPCAR (FUNCTION *) top (LIST (ATS:GetPropertiesValues 41 sheetEntityName) (ATS:GetPropertiesValues 42 sheetEntityName))))
-              ;; Dá um zoom out desproprocional para tentar selecionar o canto da folha com 'OSNAP', tentando evitar elementos circundantes
-              (PROGN
-                (SETQ top (ATS:GetObjectBoundaries (ATS:SaveObject sheetEntityName)))
-                (SETQ xBottom (CAR (CAR top)))
-                (SETQ yBottom (CADR (CAR top)))
-                (SETQ xTop (CAR (CADR top)))
-                (SETQ yTop (CADR (CADR top)))
-                (COMMAND-S "_.ZOOM" (LIST (- xBottom (* *paperUnitsFactor* 300)) (- yBottom (* *paperUnitsFactor* 300))) (LIST (+ xTop (* *paperUnitsFactor* 300)) (+ yTop (* *paperUnitsFactor* 300))))
-                (OSNAP (LIST (IF (> (ABS (- xTop (CAR bottom))) (ABS (- xBottom (CAR bottom)))) xTop xBottom) (IF (> (ABS (- yTop (CADR bottom))) (ABS (- yBottom (CADR bottom)))) yTop yBottom)) "_END"))))
-  (LIST bottom top)
+  (IF top
+    (PROGN
+      (SETQ top (ATS:TranslatePoint bottom (MAPCAR (FUNCTION *) top (LIST (ATS:GetPropertiesValues 41 sheetEntityName) (ATS:GetPropertiesValues 42 sheetEntityName)))))
+      (SETQ xBottom (CAR bottom))
+      (SETQ yBottom (CADR bottom))
+      (SETQ xTop (CAR top))
+      (SETQ yTop (CADR top))
+    )
+    ;; Dá um zoom out desproprocional para tentar selecionar o canto da folha com 'OSNAP', tentando evitar elementos circundantes
+    (PROGN
+      (SETQ top (ATS:GetObjectBoundaries (ATS:SaveObject sheetEntityName)))
+      (SETQ xBottom (CAR (CAR top)))
+      (SETQ yBottom (CADR (CAR top)))
+      (SETQ xTop (CAR (CADR top)))
+      (SETQ yTop (CADR (CADR top)))
+      (COMMAND-S "_.ZOOM" (LIST (- xBottom (* *paperUnitsFactor* 300))
+                                (- yBottom (* *paperUnitsFactor* 300)))
+                          (LIST (+ xTop (* *paperUnitsFactor* 300))
+                                (+ yTop (* *paperUnitsFactor* 300))))
+      (SETQ top (OSNAP (LIST (IF (> (ABS (- xTop (CAR bottom))) (ABS (- xBottom (CAR bottom)))) xTop xBottom)
+                             (IF (> (ABS (- yTop (CADR bottom))) (ABS (- yBottom (CADR bottom)))) yTop yBottom)) "_END"))
+    )
+  )
+)
+
+;| Procura pelo método de nomeação de folha de um carimbo na lista de carimbos
+   @global
+   @param sheetObject [obj] - Objeto da folha
+   @returns [subr] - Função de nomeação de folha
+   |;
+(DEFUN ATS:FindSheetMethod (method sheetObject)
+  (IF (AND
+        (SETQ sheetObject (ATS:GetEffectiveName sheetObject))
+        (SETQ sheetObject (VL-SOME (FUNCTION (LAMBDA (titleBlock)
+                                               (SETQ titleBlock (EVAL titleBlock))
+                                               (IF (EQ sheetObject (ATS:GetPropertiesValues "Name" titleBlock))
+                                                 titleBlock))) *titleBlocksList*)))
+    (ATS:GetPropertiesValues method sheetObject)
+  )
 )
 
 ;| Converte um ponto do espaço papel para o espaço modelo com base em uma viewport
@@ -209,7 +236,7 @@
     ((PROGN
        (SETQ sheetSize (ATS:GetPropertiesValues 10 sheetEntityName))
        (COMMAND-S "_.ZOOM" (ATS:TranslatePoint sheetSize (LIST (- *paperUnitsFactor*) (- *paperUnitsFactor*))) (ATS:TranslatePoint sheetSize (LIST *paperUnitsFactor* *paperUnitsFactor*)))
-       (IF (SETQ sheetSize (ATS:FilterSelection nil T (SSGET "_C" sheetSize sheetSize (LIST (CONS 0 "INSERT"))) (LIST (CONS 2 "*A#*"))))
+       (IF (SETQ sheetSize (ATS:FilterSelection nil T (SSGET "_C" sheetSize sheetSize (LIST (CONS 0 "INSERT"))) (LIST (CONS 2 "*A[0-5]*"))))
          (SETQ sheetObject (ATS:SaveObject (SSNAME sheetSize 0)))
        )
        (SETQ sheetSize (STRCASE (ATS:GetEffectiveName sheetObject)))
@@ -223,208 +250,6 @@
   )
 )
 
-;| Preenche os dados das folhas
-   @global
-   @returns nil
-   |;
-(DEFUN ATS:FillSheetsInfo (/ *error* projectIdentification projectName client selection count entityname)
-  (COND
-    ((NOT (SETQ selection (ATS:SelectSheets "_A"))) (PROMPT "\nNenhuma folha foi identificada.\n"))
-    (T
-      (ATS:SaveUsersPreferences 8)
-      (DEFUN *error* (errorMessage)
-        (ATS:RestoreUsersPreferences commandName errorMessage)
-      )
-      (SETQ projectIdentification (ATS:GetSubstring "" *fileSeparator* (GETVAR "DWGNAME")))
-      (SETQ projectName (GETVAR "DWGPREFIX"))
-      (SETQ client (ATS:GetSubstring (ATS:EvaluateStringSymbolList *customersFolder*) "\\" projectName))
-      (IF (AND client (SETQ client (ATS:GetSubstring " - " "" client)))
-        (SETQ client (STRCASE client))
-      )
-      (SETQ projectName (ATS:GetSubstring " - " "" (VL-FILENAME-BASE (VL-STRING-RIGHT-TRIM "\\" projectName))))
-      (IF projectName
-        (SETQ projectName (STRCASE projectName))
-      )
-      (SETQ count (SSLENGTH selection))
-      (SETQ *iterationsCount* count)
-      (REPEAT count
-        (SETQ count (1- count))
-        (SETQ entityname (SSNAME selection count))
-        (IF projectIdentification
-          (ATS:EditBlockAttributes nil entityname (LIST (CONS 2 (ATS:GetPropertiesValues "ProjectIdentificationAttributeName" *titleBlockBlockList*))) (LIST (CONS 1 projectIdentification)))
-        )
-        (IF projectName
-          (ATS:EditBlockAttributes nil entityname (LIST (CONS 2 (ATS:GetPropertiesValues "ProjectNameAttributeName" *titleBlockBlockList*))) (LIST (CONS 1 projectName)))
-        )
-        (IF client
-          (ATS:EditBlockAttributes nil entityname (LIST (CONS 2 (ATS:GetPropertiesValues "ClientAttributeName" *titleBlockBlockList*))) (LIST (CONS 1 client)))
-        )
-      )
-      (ATS:RestoreUsersPreferences commandName nil)
-    )
-  )
-)
-
-;| Preenche o conteúdo das folhas
-   @global
-   @returns nil
-   |;
-(DEFUN ATS:FillSheetsContent (/ *error* selection count entityName titlesList)
-  (COND
-    ;; Seleciona as folhas
-    ((NOT (OR (SETQ selection (ATS:SelectSheets "_I"))
-              (SETQ selection (ATS:SelectSheets (IF (EQ (ATS:GetKeyword "Sim" (LIST "Sim" "Não") "\nDeseja preencher o conteúdo de todas as folhas do layout?\n") "Sim") "_A"))))) (PROMPT "\nNenhuma folha foi selecionada.\n"))
-    (T
-      (ATS:SaveUsersPreferences 26)
-      (DEFUN *error* (errorMessage)
-        (ATS:RestoreUsersPreferences commandName errorMessage)
-      )
-      (SETQ count (SSLENGTH selection))
-      (SETQ *iterationsCount* count)
-      (REPEAT count
-        (SETQ count (1- count))
-        (SETQ entityName (SSNAME selection count))
-        (SETQ titlesList (ATS:GetDrawingsTitles entityName))
-        (ATS:EditBlockAttributes nil entityName (LIST (CONS 2 (ATS:GetPropertiesValues "ContentAttributeName" *titleBlockBlockList*))) (LIST (CONS 1 (ATS:ListToString "\\P" titlesList))))
-        (SETQ titlesList (VL-SOME (FUNCTION (LAMBDA (projectType) (IF (VL-SOME (FUNCTION (LAMBDA (title) (WCMATCH (STRCASE title) (STRCAT "*" (STRCASE projectType) "*")))) titlesList) projectType))) (MAPCAR (FUNCTION CAR) *projectTypes*)))
-        (IF titlesList
-          (ATS:EditBlockAttributes nil entityName (LIST (CONS 2 (ATS:GetPropertiesValues "ProjectTypeAttributeName" *titleBlockBlockList*))) (LIST (CONS 1 titlesList)))
-        )
-      )
-      (ATS:RestoreUsersPreferences commandName nil)
-    )
-  )
-)
-
-;| Ajusta o controle de revisões das folhas
-   @global
-   @returns nil
-   |;
-(DEFUN ATS:UpdateSheetsRevision (/ *error* revisionChange selection revisionDescription revisionAttribute dateAttribute sheetNotesAttribute currentDate responsible count sheetEntityName revisionNumber row rowHeight sheetObject)
-  (COND
-    ((NOT (SETQ revisionChange (ATS:GetKeyword "Subir" (LIST "Subir" "Atualizar") "\nDeseja subir ou atualizar a revisão das folhas?\n"))))
-    ((PROGN
-      (IF (AND (SETQ selection (SSGET "_A" (LIST (CONS 0 "ACAD_TABLE") (CONS 410 (GETVAR "CTAB")))))
-               (VL-SOME (FUNCTION (LAMBDA (table) (EQ (VLA-GET-STYLENAME (ATS:SaveObject table)) *revisionTableStyle*))) (ATS:GetSelectionProperties -1 selection)))
-        (SETQ revisionDescription (GETSTRING T "\nInsira a descrição da revisão:\n"))
-      )
-      (NOT (OR (SETQ selection (ATS:SelectSheets "_I"))
-               (SETQ selection (ATS:SelectSheets (IF (EQ (ATS:GetKeyword "Sim" (LIST "Sim" "Não") (STRCAT "\nDeseja " (STRCASE revisionChange T) " a revisão de todas as folhas do layout?\n")) "Sim") "_A")))))) (PROMPT "\nNenhuma folha foi selecionada.\n"))
-    (T
-      (ATS:SaveUsersPreferences 26)
-      (DEFUN *error* (errorMessage)
-        (ATS:RestoreUsersPreferences commandName errorMessage)
-      )
-      (SETQ revisionAttribute (ATS:GetPropertiesValues "RevisionAttributeName" *titleBlockBlockList*))
-      (SETQ dateAttribute (ATS:GetPropertiesValues "DateAttributeName" *titleBlockBlockList*))
-      (SETQ sheetNotesAttribute (ATS:GetPropertiesValues "SheetNotesDistancePropertyName" *titleBlockBlockList*))
-      (SETQ currentDate (ATS:WriteCurrentDate nil nil))
-      (SETQ responsible (STRCASE (ATS:WriteShortenedName *loginName*)))
-      (SETQ count (SSLENGTH selection))
-      (SETQ *iterationsCount* count)
-      (IF (EQ revisionChange "Subir")
-        (REPEAT count
-          (SETQ count (1- count))
-          (SETQ sheetEntityName (SSNAME selection count))
-          ;; Sobe o número da revisão na folha e atualiza a data
-          (SETQ revisionNumber (ATS:SearchAttribute nil sheetEntityName (LIST (CONS 2 revisionAttribute))))
-          (ATS:ChangePropertiesValues revisionNumber (LIST (CONS 1 (SETQ revisionNumber (ATS:AddLeftZeros 2 (ITOA (1+ (ATOI (ATS:GetPropertiesValues 1 revisionNumber)))))))))
-          (ATS:EditBlockAttributes nil sheetEntityName (LIST (CONS 2 dateAttribute)) (LIST (CONS 1 currentDate)))
-          ;; Faz o mesmo para a tabela, e também acrescenta a descrição e responsável pela revisão
-          (IF (SETQ revisionTable (ATS:SaveObject (ATS:SelectRevisionTable sheetEntityName)))
-            (PROGN
-              (SETQ row (VLA-GET-ROWS revisionTable))
-              (SETQ rowHeight (VLA-GETROWHEIGHT revisionTable (1- row)))
-              ;; Move os elementos acima da tabela
-              (IF sheetNotesAttribute
-                (PROGN
-                  (SETQ sheetObject (ATS:SaveObject sheetEntityName))
-                  (ATS:ChangeDynamicBlockPropertiesValues nil sheetObject (LIST (CONS sheetNotesAttribute (+ (ATS:GetDynamicBlockProperties nil nil sheetObject sheetNotesAttribute) rowHeight))))
-                )
-              )
-              ;; Insere a linha e preenche seu conteúdo
-              (VLA-INSERTROWS revisionTable row rowHeight 1)
-              (VLA-SETTEXT revisionTable row 0 revisionNumber)
-              (VLA-SETTEXT revisionTable row 1 revisionDescription)
-              (VLA-SETTEXT revisionTable row 2 currentDate)
-              (VLA-SETTEXT revisionTable row 4 responsible)
-            )
-          )
-        )
-        (REPEAT count
-          (SETQ count (1- count))
-          (SETQ sheetEntityName (SSNAME selection count))
-          ;; Atualiza a data na folha
-          (ATS:EditBlockAttributes nil sheetEntityName (LIST (CONS 2 dateAttribute)) (LIST (CONS 1 currentDate)))
-          ;; Faz o mesmo para a tabela, e também acrescenta a descrição e responsável pela revisão
-          (IF (SETQ revisionTable (ATS:SaveObject (ATS:SelectRevisionTable sheetEntityName)))
-            (PROGN
-              (SETQ row (1- (VLA-GET-ROWS revisionTable)))
-              (IF (> (STRLEN revisionDescription) 0)
-                (VLA-SETTEXT revisionTable row 1 revisionDescription)
-              )
-              (VLA-SETTEXT revisionTable row 2 currentDate)
-              (VLA-SETTEXT revisionTable row 4 responsible)
-            )
-          )
-        )
-      )
-      (ATS:RestoreUsersPreferences commandName nil)
-    )
-  )
-)
-
-;| Renumera folhas
-   @global
-   @returns nil
-   |;
-(DEFUN ATS:RenumberSheets (/ *error* selection selectionMethod count sheetNumberTotalDigits sheetNumberSuffix)
-  (COND
-    ;; Seleciona as folhas
-    ((NOT (OR (SETQ selection (ATS:SelectSheets "_I"))
-              (PROGN
-                (SETQ selectionMethod (IF (EQ (ATS:GetKeyword "Sim" (LIST "Sim" "Não") "\nDeseja renumerar todas as folhas do layout?\n") "Sim") "_A"))
-                (SETQ selection (ATS:SelectSheets selectionMethod))))) (PROMPT "\nNenhuma folha foi selecionada.\n"))
-    ;; Define o número total de folhas
-    ((NOT (PROGN
-            (SETQ count (SSLENGTH selection))
-            (SETQ sheetNumberTotalDigits (MAX (STRLEN (ITOA count)) *minimalSheetNumberTotalDigits*))
-            (SETQ sheetNumberSuffix (IF *totalSheetNumberSeparator*
-                                      (STRCAT *totalSheetNumberSeparator* (ATS:AddLeftZeros sheetNumberTotalDigits (IF (AND (OR (NOT selectionMethod) (> (LENGTH (LAYOUTLIST)) 1)) (EQ (ATS:GetKeyword "Não" (LIST "Sim" "Não") "\nDeseja inserir o número total de folhas?\n") "Sim"))
-                                                                                                                     (PROGN (INITGET 7) (ITOA (GETINT "\nInsira o número total de folhas:\n")))
-                                                                                                                     (ITOA count)))) "")))))
-    (T
-      (ATS:SaveUsersPreferences 8)
-      (DEFUN *error* (errorMessage)
-        (ATS:RestoreUsersPreferences commandName errorMessage)
-      )
-      ;; Altera a numeração das folhas
-      (FOREACH sheet (REVERSE (ATS:SortSelectionByPosition (* *paperUnitsFactor* 0.15) selection))
-        (SETQ *iterationsCount* (1+ *iterationsCount*))
-        (ATS:EditBlockAttributes nil sheet (LIST (CONS 2 (ATS:GetPropertiesValues "SheetNumberAttributeName" *titleBlockBlockList*))) (LIST (CONS 1 (STRCAT (ATS:AddLeftZeros sheetNumberTotalDigits (ITOA count)) sheetNumberSuffix))))
-        (SETQ count (1- count))
-      )
-      (ATS:RestoreUsersPreferences commandName nil)
-    )
-  )
-)
-
-;| Procura pelo método de nomeação de folha de um carimbo na lista de carimbos
-   @global
-   @param sheetObject [obj] - Objeto da folha
-   @returns [subr] - Função de nomeação de folha
-   |;
-(DEFUN ATS:FindMakeSheetMethod (sheetObject)
-  (IF (AND
-        (SETQ sheetObject (ATS:GetEffectiveName sheetObject))
-        (SETQ sheetObject (VL-SOME (FUNCTION (LAMBDA (titleBlock)
-                                               (SETQ titleBlock (EVAL titleBlock))
-                                               (IF (EQ sheetObject (ATS:GetPropertiesValues "Name" titleBlock))
-                                                 titleBlock))) *titleBlocksList*)))
-    (ATS:GetPropertiesValues "NameSheet" sheetObject)
-  )
-)
-
 ;| Obtém o nome da folha
    @global
    @param sheetEntityName [ename] - Nome da entidade da folha
@@ -432,16 +257,15 @@
    |;
 (DEFUN ATS:GetSheetName (sheetEntityName / sheetObject method)
   (SETQ sheetObject (ATS:SaveObject sheetEntityName))
-  (SETQ method (ATS:FindMakeSheetMethod sheetObject))
+  (SETQ method (ATS:FindSheetMethod "NameSheet" sheetObject))
   ;; Caso não encontre o método de nomeação de folha, procura pelo carimbo
   (IF (AND
         (NOT method)
-        (NOT (ATS:SaveBoundaries (ATS:GetObjectBoundaries sheetObject)))
         (SETQ xBottom (ATS:TranslatePoint (LIST xTop yBottom) (LIST (* *paperUnitsFactor* -1.5) (* *paperUnitsFactor* 1.5))))
         (SETQ xBottom (SSGET "_C" xBottom (ATS:TranslatePoint xBottom (LIST (* *paperUnitsFactor* -3.0) (* *paperUnitsFactor* 3.0))) (LIST (CONS 0 "INSERT")))))
     (PROGN
       (SETQ sheetEntityName (SSNAME xBottom 0))
-      (SETQ method (ATS:FindMakeSheetMethod (ATS:SaveObject sheetEntityName)))
+      (SETQ method (ATS:FindSheetMethod "NameSheet" (ATS:SaveObject sheetEntityName)))
     )
   )
   ;; Retorna o nome através do método de nomeação de folha ou solicita ao usuário
@@ -449,7 +273,7 @@
     (APPLY (FUNCTION method) (LIST sheetEntityName))
     (PROGN
       (COMMAND-S "_.ZOOM" bottom top)
-      (GETSTRING T "\nInsira o nome desta folha, ou 'Enter' para ignorar:\n")
+      (ATS:GetString nil T nil "\nInsira o nome desta folha, ou 'Enter' para ignorar:\n")
     )
   )
 )
@@ -483,21 +307,19 @@
    @param sheetEntityName [ename/lst] - Nome da entidade da folha, ou uma lista com: nome do tamanho, coordenadas do contorno e nome da folha
    @returns [nil] - Plota a folha
    |;
-(DEFUN ATS:PlotSheet (plotter plotStyle savePath sheetEntityName / sheetSize bottom top sheetName sheetOrientation)
+(DEFUN ATS:PlotSheet (plotter plotStyle savePath sheetEntityName / sheetSize sheetName sheetOrientation)
   (SETQ *iterationsCount* (1+ *iterationsCount*))
   (IF (EQ (TYPE sheetEntityName) (READ "ENAME"))
     (PROGN
       (SETQ sheetSize (ATS:GetSheetSize sheetEntityName))
-      (SETQ bottom (ATS:GetSheetBoundaries sheetEntityName))
-      (SETQ top (CADR bottom))
-      (SETQ bottom (CAR bottom))
+      (ATS:GetSheetBoundaries sheetEntityName)
       (SETQ sheetName (ATS:GetSheetName sheetEntityName))
     )
-    (AND
+    (PROGN
       (SETQ sheetSize (CAR sheetEntityName))
       (SETQ bottom (CADR sheetEntityName))
       (SETQ top (CADDR sheetEntityName))
-      (SETQ sheetName (COND ((CADDDR sheetEntityName)) ("ATS")))
+      (SETQ sheetName (COND ((CADDDR sheetEntityName)) ((STRCAT *commandName* (ITOA *iterationsCount*)))))
     )
   )
   (IF sheetName
@@ -519,6 +341,69 @@
   )
 )
 
+;| Isola uma folha em um arquivo único
+   @global
+   @param extension [str] - Extensão do arquivo
+   @param version [str] - Versão do arquivo
+   @param savePath [str] - Caminho para salvar o arquivo, ou 'nil' para apenas aplicar as configurações ao layout
+   @param sheetEntityName [ename/lst] - Nome da entidade da folha, ou uma lista com: nome do tamanho, coordenadas do contorno e nome da folha
+   @returns [nil] - Isola a folha em um arquivo único
+   |;
+(DEFUN ATS:IsolateSheet (extension version savePath sheetEntityName / sheetName selection count entityName)
+  ;; Obtém o contorno da folha
+  (ATS:GetSheetBoundaries sheetEntityName)
+  ;; Obtém o nome da folha uma vez, evitando que seja solicitado ao usuário em redundância
+  (IF (EQ (TYPE sheetEntityName) (READ "ENAME"))
+    (PROGN
+      (SETQ sheetName (ATS:GetSheetName sheetEntityName))
+      (SETQ sheetEntityName (LIST (ATS:GetSheetSize sheetEntityName) bottom top sheetName))
+    )
+    (PROGN
+      (SETQ sheetName (COND ((CADDDR sheetEntityName)) ((STRCAT *commandName* (ITOA (1+ *iterationsCount*))))))
+      (SETQ sheetEntityName (ATS:SubstituteItemByPosition sheetName -1 sheetEntityName))
+    )
+  )
+  ;; Configura a área de impressão
+  (ATS:PlotSheet *standardPlotter* *standardPlotStyle* nil sheetEntityName)
+  ;; Exclui as demais folhas
+  (IF (SETQ selection (ATS:TrimSelectionSets (SSGET "_A" (LIST (CONS -4 "<NOT") (CONS -4 "<AND") (CONS 0 "VIEWPORT") (CONS 69 1) (CONS -4 "AND>") (CONS -4 "NOT>") (CONS 410 (GETVAR "CTAB")))) (SSGET "_C" bottom top)))
+    (COMMAND-S "_.ERASE" selection "")
+  )
+  ;; Obtém os contornos no Model de cada viewport
+  (IF (SETQ selection (ATS:SelectViewports "_A"))
+    (PROGN
+      (SETQ count (SSLENGTH selection))
+      (REPEAT count
+        (SETQ count (1- count))
+        (SETQ entityName (SSNAME selection count))
+        (SETQ viewports (CONS (ATS:TranslatePaperPoints (ATS:GetObjectBoundaries (ATS:SaveObject entityName)) entityName) viewports))
+      )
+    )
+  )
+  ;; Renomeia o layout
+  (COMMAND-S "_.-LAYOUT" "_RENAME" "" sheetName)
+  ;; Exclui os elementos fora de viewports
+  (COMMAND-S "_.-LAYOUT" "_SET" "Model")
+  (IF (AND (SETQ selection (SSGET "_A" (LIST (CONS 410 "Model"))))
+           (PROGN 
+             (SETQ viewports (ATS:JoinSelectionSets (MAPCAR (FUNCTION (LAMBDA (viewport / bottom top)
+                                                                        (SETQ bottom (CAR viewport))
+                                                                        (SETQ top (CADR viewport))
+                                                                        (COMMAND-S "_.ZOOM" bottom top)
+                                                                        (SSGET "_C" bottom top))) viewports)))
+             (SETQ selection (ATS:TrimSelectionSets selection viewports))))
+    (COMMAND-S "_.ERASE" selection "")
+  )
+  (COMMAND-S "_.-LAYOUT" "_SET" sheetName)
+  (IF (EQ extension "DXF")
+    (COMMAND "_.SAVEAS" extension "_VERSION" version "16" (STRCAT savePath sheetName))
+    (COMMAND "_.SAVEAS" version (STRCAT savePath sheetName))
+  )
+  (IF (> (GETVAR "CMDACTIVE") 0)
+    (COMMAND "_YES")
+  )
+)
+
 ;| Gera uma viewport, ou altera o layer atual ou do objeto selecionado
    @returns nil
    |;
@@ -531,7 +416,11 @@
     )
     (PROGN
       (ATS:SetCurrentLayer (ATS:EvaluateStringSymbolList *viewportLayer*))
-      (IF (NOT (EQ (GETVAR "CTAB") "Model"))
+      (IF (EQ (GETVAR "CTAB") "Model")
+        (IF (SETQ method (ATS:GetPropertiesValues "Insert" *viewportBlockList*))
+          (APPLY (FUNCTION method) nil)
+          (PROMPT "\nMétodo de inserção de viewport não encontrado.\n")
+        )
         (COMMAND-S "_.-VPORTS")
       )
     )
@@ -608,15 +497,217 @@
   )
 )
 
+;| Preenche os dados das folhas
+   @global
+   @returns nil
+   |;
+(DEFUN ATS:FillSheetsInfo (/ *error* projectIdentification projectName client selection count entityname)
+  (COND
+    ((NOT (SETQ selection (ATS:SelectSheets "_A"))) (PROMPT "\nNenhuma folha foi identificada.\n"))
+    (T
+      (ATS:SaveUsersPreferences 8)
+      (DEFUN *error* (errorMessage)
+        (ATS:RestoreUsersPreferences commandName errorMessage)
+      )
+      (SETQ projectIdentification (ATS:GetSubstring "" *fileSeparator* (GETVAR "DWGNAME")))
+      (SETQ projectName (GETVAR "DWGPREFIX"))
+      (SETQ client (ATS:GetSubstring (ATS:EvaluateStringSymbolList *customersFolder*) "\\" projectName))
+      (IF (AND client (SETQ client (ATS:GetSubstring " - " "" client)))
+        (SETQ client (STRCASE client))
+      )
+      (SETQ projectName (ATS:GetSubstring " - " "" (VL-FILENAME-BASE (VL-STRING-RIGHT-TRIM "\\" projectName))))
+      (IF projectName
+        (SETQ projectName (STRCASE projectName))
+      )
+      (SETQ count (SSLENGTH selection))
+      (SETQ *iterationsCount* count)
+      (REPEAT count
+        (SETQ count (1- count))
+        (SETQ entityname (SSNAME selection count))
+        (IF projectIdentification
+          (ATS:EditBlockAttributes nil entityname (LIST (CONS 2 (ATS:GetPropertiesValues "ProjectIdentificationAttributeName" *titleBlockBlockList*))) (LIST (CONS 1 projectIdentification)))
+        )
+        (IF projectName
+          (ATS:EditBlockAttributes nil entityname (LIST (CONS 2 (ATS:GetPropertiesValues "ProjectNameAttributeName" *titleBlockBlockList*))) (LIST (CONS 1 projectName)))
+        )
+        (IF client
+          (ATS:EditBlockAttributes nil entityname (LIST (CONS 2 (ATS:GetPropertiesValues "ClientAttributeName" *titleBlockBlockList*))) (LIST (CONS 1 client)))
+        )
+      )
+      (ATS:RestoreUsersPreferences commandName nil)
+    )
+  )
+)
+
+;| Preenche o conteúdo das folhas
+   @global
+   @returns nil
+   |;
+(DEFUN ATS:FillSheetsContent (/ *error* selection count entityName titlesList)
+  (COND
+    ;; Seleciona as folhas
+    ((NOT (OR (SETQ selection (ATS:SelectSheets "_I"))
+              (PROGN
+                (PROMPT "\nSelecione as folhas, ou Enter para selecionar todas.\n")
+                (SETQ selection (ATS:SelectSheets nil))
+              )
+              (SETQ selection (ATS:SelectSheets "_A")))) (PROMPT "\nNenhuma folha foi selecionada.\n"))
+    (T
+      (ATS:SaveUsersPreferences 26)
+      (DEFUN *error* (errorMessage)
+        (ATS:RestoreUsersPreferences commandName errorMessage)
+      )
+      (SETQ count (SSLENGTH selection))
+      (SETQ *iterationsCount* count)
+      (REPEAT count
+        (SETQ count (1- count))
+        (SETQ entityName (SSNAME selection count))
+        (SETQ titlesList (ATS:GetDrawingsTitles entityName))
+        (ATS:EditBlockAttributes nil entityName (LIST (CONS 2 (ATS:GetPropertiesValues "ContentAttributeName" *titleBlockBlockList*))) (LIST (CONS 1 (ATS:ListToString "\\P" titlesList))))
+        (SETQ titlesList (VL-SOME (FUNCTION (LAMBDA (projectType) (IF (VL-SOME (FUNCTION (LAMBDA (title) (WCMATCH (STRCASE title) (STRCAT "*" (STRCASE projectType) "*")))) titlesList) projectType))) (MAPCAR (FUNCTION CAR) *projectTypes*)))
+        (IF titlesList
+          (ATS:EditBlockAttributes nil entityName (LIST (CONS 2 (ATS:GetPropertiesValues "ProjectTypeAttributeName" *titleBlockBlockList*))) (LIST (CONS 1 titlesList)))
+        )
+      )
+      (ATS:RestoreUsersPreferences commandName nil)
+    )
+  )
+)
+
+;| Ajusta o controle de revisões das folhas
+   @global
+   @returns nil
+   |;
+(DEFUN ATS:UpdateSheetsRevision (/ *error* revisionChange selection revisionDescription revisionAttribute dateAttribute sheetNotesAttribute currentDate responsible count sheetEntityName revisionNumber row rowHeight sheetObject)
+  (COND
+    ((NOT (SETQ revisionChange (ATS:GetKeyword "Subir" (LIST "Subir" "Atualizar") "\nDeseja subir ou atualizar a revisão das folhas?\n"))))
+    ((PROGN
+      (IF (AND (SETQ selection (SSGET "_A" (LIST (CONS 0 "ACAD_TABLE") (CONS 410 (GETVAR "CTAB")))))
+               (VL-SOME (FUNCTION (LAMBDA (table) (EQ (VLA-GET-STYLENAME (ATS:SaveObject table)) *revisionTableStyle*))) (ATS:GetSelectionProperties -1 selection)))
+        (SETQ revisionDescription (GETSTRING T "\nInsira a descrição da revisão:\n"))
+      )
+      (NOT (OR (SETQ selection (ATS:SelectSheets "_I"))
+              (PROGN
+                (PROMPT "\nSelecione as folhas, ou Enter para selecionar todas.\n")
+                (SETQ selection (ATS:SelectSheets nil))
+              )
+              (SETQ selection (ATS:SelectSheets "_A"))))) (PROMPT "\nNenhuma folha foi selecionada.\n"))
+    (T
+      ((ATS:SaveUsersPreferences 26)
+      (DEFUN *error* (errorMessage)
+        (ATS:RestoreUsersPreferences commandName errorMessage)
+      )
+      (SETQ revisionAttribute (ATS:GetPropertiesValues "RevisionAttributeName" *titleBlockBlockList*))
+      (SETQ dateAttribute (ATS:GetPropertiesValues "DateAttributeName" *titleBlockBlockList*))
+      (SETQ sheetNotesAttribute (ATS:GetPropertiesValues "SheetNotesDistancePropertyName" *titleBlockBlockList*))
+      (SETQ currentDate (ATS:WriteCurrentDate nil nil))
+      (SETQ responsible (STRCASE (ATS:WriteShortenedName *loginName*)))
+      (SETQ count (SSLENGTH selection))
+      (SETQ *iterationsCount* count)
+      (IF (EQ revisionChange "Subir")
+        (REPEAT count
+          (SETQ count (1- count))
+          (SETQ sheetEntityName (SSNAME selection count))
+          ;; Sobe o número da revisão na folha e atualiza a data
+          (SETQ revisionNumber (ATS:SearchAttribute nil sheetEntityName (LIST (CONS 2 revisionAttribute))))
+          (ATS:ChangePropertiesValues revisionNumber (LIST (CONS 1 (SETQ revisionNumber (ATS:AddLeftZeros 2 (ITOA (1+ (ATOI (ATS:GetPropertiesValues 1 revisionNumber)))))))))
+          (ATS:EditBlockAttributes nil sheetEntityName (LIST (CONS 2 dateAttribute)) (LIST (CONS 1 currentDate)))
+          ;; Faz o mesmo para a tabela, e também acrescenta a descrição e responsável pela revisão
+          (IF (SETQ revisionTable (ATS:SaveObject (ATS:SelectRevisionTable sheetEntityName)))
+            (PROGN
+              (SETQ row (VLA-GET-ROWS revisionTable))
+              (SETQ rowHeight (VLA-GETROWHEIGHT revisionTable (1- row)))
+              ;; Move os elementos acima da tabela
+              (IF sheetNotesAttribute
+                (PROGN
+                  (SETQ sheetObject (ATS:SaveObject sheetEntityName))
+                  (ATS:ChangeDynamicBlockPropertiesValues nil sheetObject (LIST (CONS sheetNotesAttribute (+ (ATS:GetDynamicBlockProperties nil nil sheetObject sheetNotesAttribute) rowHeight))))
+                )
+              )
+              ;; Insere a linha e preenche seu conteúdo
+              (VLA-INSERTROWS revisionTable row rowHeight 1)
+              (VLA-SETTEXT revisionTable row 0 revisionNumber)
+              (VLA-SETTEXT revisionTable row 1 revisionDescription)
+              (VLA-SETTEXT revisionTable row 2 currentDate)
+              (VLA-SETTEXT revisionTable row 4 responsible)
+            )
+          )
+        )
+        (REPEAT count
+          (SETQ count (1- count))
+          (SETQ sheetEntityName (SSNAME selection count))
+          ;; Atualiza a data na folha
+          (ATS:EditBlockAttributes nil sheetEntityName (LIST (CONS 2 dateAttribute)) (LIST (CONS 1 currentDate)))
+          ;; Faz o mesmo para a tabela, e também acrescenta a descrição e responsável pela revisão
+          (IF (SETQ revisionTable (ATS:SaveObject (ATS:SelectRevisionTable sheetEntityName)))
+            (PROGN
+              (SETQ row (1- (VLA-GET-ROWS revisionTable)))
+              (IF (> (STRLEN revisionDescription) 0)
+                (VLA-SETTEXT revisionTable row 1 revisionDescription)
+              )
+              (VLA-SETTEXT revisionTable row 2 currentDate)
+              (VLA-SETTEXT revisionTable row 4 responsible)
+            )
+          )
+        )
+      )
+      (ATS:RestoreUsersPreferences commandName nil))
+    )
+  )
+)
+
+;| Renumera folhas
+   @global
+   @returns nil
+   |;
+(DEFUN ATS:RenumberSheets (/ *error* selection selectionMethod count sheetNumberTotalDigits sheetNumberSuffix)
+  (COND
+    ;; Seleciona as folhas
+    ((NOT (OR (SETQ selection (ATS:SelectSheets "_I"))
+              (PROGN
+                (PROMPT "\nSelecione as folhas, ou Enter para selecionar todas.\n")
+                (SETQ selection (ATS:SelectSheets nil))
+              )
+              (SETQ selection (ATS:SelectSheets "_A")))) (PROMPT "\nNenhuma folha foi selecionada.\n"))
+    ;; Define o número total de folhas
+    ((NOT (PROGN
+            (SETQ count (SSLENGTH selection))
+            (SETQ sheetNumberTotalDigits (MAX (STRLEN (ITOA count)) *minimalSheetNumberTotalDigits*))
+            (SETQ sheetNumberSuffix (IF *totalSheetNumberSeparator*
+                                      (STRCAT *totalSheetNumberSeparator* (ATS:AddLeftZeros sheetNumberTotalDigits (IF (AND (OR (NOT selectionMethod) (> (LENGTH (LAYOUTLIST)) 1)) (EQ (ATS:GetKeyword "Não" (LIST "Sim" "Não") "\nDeseja inserir o número total de folhas?\n") "Sim"))
+                                                                                                                     (PROGN (INITGET 7) (ITOA (GETINT "\nInsira o número total de folhas:\n")))
+                                                                                                                     (ITOA count)))) "")))))
+    (T
+      (ATS:SaveUsersPreferences 8)
+      (DEFUN *error* (errorMessage)
+        (ATS:RestoreUsersPreferences commandName errorMessage)
+      )
+      ;; Altera a numeração das folhas
+      (FOREACH sheet (REVERSE (ATS:SortSelectionByPosition (* *paperUnitsFactor* 0.15) selection))
+        (SETQ *iterationsCount* (1+ *iterationsCount*))
+        (ATS:EditBlockAttributes nil sheet (LIST (CONS 2 (ATS:GetPropertiesValues "SheetNumberAttributeName" *titleBlockBlockList*))) (LIST (CONS 1 (STRCAT (ATS:AddLeftZeros sheetNumberTotalDigits (ITOA count)) sheetNumberSuffix))))
+        (SETQ count (1- count))
+      )
+      (ATS:RestoreUsersPreferences commandName nil)
+    )
+  )
+)
+
 ;| Gera PDF das folhas
    @returns nil
    |;
 (DEFUN C:PDF (/ *error* commandName savePath selection sheetEntityName count sheetObject bottom top xBottom yBottom xTop yTop sheetName)
   (SETQ commandName "PDF")
   (COND
-    ((NOT (OR (AND (SETQ selection (SSGET "_I")) (SETQ selection (ATS:SelectSheets selection))) (PROGN (SSSETFIRST nil nil) (SETQ selection (ATS:SelectSheets (IF (EQ (ATS:GetKeyword "Sim" (LIST "Sim" "Não") "\nDeseja gerar PDF de todas as folhas do layout?\n") "Sim") "_A")))))) (PROMPT "\nNenhuma folha foi selecionada.\n"))
+    ((NOT (OR (SETQ selection (ATS:SelectSheets "_I"))
+              (PROGN
+                (PROMPT "\nSelecione as folhas, ou Enter para selecionar todas.\n")
+                (SETQ selection (ATS:SelectSheets nil))
+              )
+              (SETQ selection (ATS:SelectSheets "_A")))) (PROMPT "\nNenhuma folha foi selecionada.\n"))
     ;; Verifica se a pasta de emissão existe e pergunta se deseja salvar nela
-    ((NOT (IF (AND (VL-FILE-DIRECTORY-P (STRCAT (SETQ savePath (GETVAR "DWGPREFIX")) (CADR *emissionFolderName*))) (EQ (ATS:GetKeyword "Não" (LIST "Sim" "Não") "\nDeseja salvar na pasta de emissão?\n") "Sim"))
+    ((NOT (IF (AND (VL-FILE-DIRECTORY-P (STRCAT (SETQ savePath (GETVAR "DWGPREFIX")) (CADR *emissionFolderName*)))
+                   (EQ (ATS:GetKeyword "Não" (LIST "Sim" "Não") "\nDeseja salvar na pasta de emissão?\n") "Sim"))
             (PROGN
               (SETQ sheetEntityName (SSNAME selection 0))
               (SETQ savePath (ATS:GetEmissionFolder (ATS:GetAttributeProperties nil 1 sheetEntityName (LIST (CONS 2 (ATS:GetPropertiesValues "ProjectPhaseAttributeName" *titleBlockBlockList*)))) (ATS:GetAttributeProperties nil 1 sheetEntityName (LIST (CONS 2 (ATS:GetPropertiesValues "RevisionAttributeName" *titleBlockBlockList*))))))
@@ -649,7 +740,7 @@
   (COND
     ((NOT (PROGN (INITGET 1) (SETQ bottom (GETPOINT "\nClique em um canto da folha.\n")))) (PROMPT "\nNenhum ponto foi selecionado.\n"))
     ((NOT (PROGN (INITGET 1) (SETQ top (GETCORNER bottom "\nClique no canto oposto da folha.\n")))) (PROMPT "\nNenhum contorno foi selecionado.\n"))
-    ((NOT (PROGN (INITGET 1) (SETQ sheetName (GETSTRING T "\nInsira o nome da folha:\n")))) (PROMPT "\nNenhum nome foi introduzido.\n"))
+    ((NOT (SETQ sheetName (ATS:GetString 1 T nil "\nInsira o nome da folha:\n"))) (PROMPT "\nNenhum nome foi introduzido.\n"))
     ((NOT (SETQ savePath (ATS:BrowseForFolder "Escolha a pasta" 16 nil))) (PROMPT "\nNenhuma pasta foi selecionada.\n"))
     (T
       (ATS:SaveUsersPreferences 27)
@@ -677,6 +768,49 @@
       )
       (ATS:PlotSheet *standardPlotter* *standardPlotStyle* nil (LIST (ATS:PredictSheetSize bottom top) bottom top nil))
       (ATS:RestoreUsersPreferences commandName nil)
+    )
+  )
+)
+
+;| Separa cada folha em arquivos únicos DWG
+   @returns nil
+   |;
+(DEFUN C:DWG (/ *error* commandName selection sheetEntityName savePath count)
+  (SETQ commandName "DWG")
+  (COND
+    ((NOT (OR (SETQ selection (ATS:SelectSheets "_I"))
+              (PROGN
+                (PROMPT "\nSelecione as folhas, ou Enter para selecionar todas.\n")
+                (SETQ selection (ATS:SelectSheets nil))
+              )
+              (SETQ selection (ATS:SelectSheets "_A")))) (PROMPT "\nNenhuma folha foi selecionada.\n"))
+    ;; Verifica se a pasta de emissão existe e pergunta se deseja salvar nela
+    ((NOT (IF (AND (VL-FILE-DIRECTORY-P (STRCAT (SETQ savePath (GETVAR "DWGPREFIX")) (CADR *emissionFolderName*))) (EQ (ATS:GetKeyword "Não" (LIST "Sim" "Não") "\nDeseja salvar na pasta de emissão?\n") "Sim"))
+            (PROGN
+              (SETQ sheetEntityName (SSNAME selection 0))
+              (SETQ savePath (ATS:GetEmissionFolder (ATS:GetAttributeProperties nil 1 sheetEntityName (LIST (CONS 2 (ATS:GetPropertiesValues "ProjectPhaseAttributeName" *titleBlockBlockList*)))) (ATS:GetAttributeProperties nil 1 sheetEntityName (LIST (CONS 2 (ATS:GetPropertiesValues "RevisionAttributeName" *titleBlockBlockList*))))))
+            )
+            ;; Escolhe a pasta para salvar os arquivos, ou salva no diretório do arquivo
+            (IF (EQ (ATS:GetKeyword "Não" (LIST "Sim" "Não") "\nDeseja escolher onde salvar os arquivos gerados?\n") "Sim")
+              (SETQ savePath (ATS:BrowseForFolder "Escolha a pasta" 16 nil))
+              savePath))) (PROMPT "\nNenhuma pasta foi selecionada.\n"))
+    (T
+      (ATS:SaveUsersPreferences 15)
+      (DEFUN *error* (errorMessage)
+        (ATS:RestoreUsersPreferences commandName errorMessage)
+      )
+      (ATS:DeleteRemainingLayouts)
+      (ATS:CleanFile T)
+      (SETQ count (SSLENGTH selection))
+      (REPEAT count
+        (COMMAND-S "_.UNDO" "_MARK")
+        (SETQ count (1- count))
+        (SETQ sheetEntityName (SSNAME selection count))
+        (ATS:IsolateSheet "DWG" "2018" savePath sheetEntityName)
+        (COMMAND-S "_.UNDO" "_BACK")
+      )
+      (ATS:RestoreUsersPreferences commandName nil)
+      (COMMAND-S "_.CLOSE" "_YES")
     )
   )
 )

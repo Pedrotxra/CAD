@@ -326,10 +326,11 @@
       (DEFUN *error* (errorMessage)
         (ATS:RestoreUsersPreferences commandName errorMessage)
       )
-      ;; Exclui hachuras dentro dos blocos de arquitetura
+      ;; Exclui hachuras dentro de blocos
       (SETQ deleteHatch (LAMBDA (hatch / backgroundColor)
                           (IF (EQ (VLA-GET-ObjectName hatch) "AcDbHatch")
-                            (VLA-DELETE hatch))))
+                            (VLA-DELETE hatch)
+                            (SETQ *iterationsCount* (1- *iterationsCount*)))))
       (SETQ count (SSLENGTH selection))
       (REPEAT count
         (SETQ count (1- count))
